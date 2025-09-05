@@ -167,6 +167,7 @@ web/
 !/dev/ci/**/Gemfile.lock
 
 # Firebase config
+# Flutter project에서는 git 에 포함하는게 맞음
 lib/firebase_options.dart
 firebase.json
 
