@@ -138,17 +138,25 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(10)),
 
+                // "OR" 텍스트와 좌우 구분선을 표시하는 UI입니다.
+                // Row를 사용하여 자식 위젯들을 가로로 배치합니다.
                 Row(
+                  // 자식 위젯들을 주 축(가로)의 중앙에 정렬합니다.
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // 왼쪽 구분선입니다. 화면 너비의 40%를 차지합니다.
                     Container(
                       height: SizeConfig.getProportionateHeight(1),
                       width: SizeConfig.screenWidth * 0.40,
                       decoration: const BoxDecoration(color: Colors.grey),
                     ),
-                    SizedBox(height: SizeConfig.getProportionateHeight(5)),
+                    // "OR" 텍스트와 구분선 사이의 간격을 줍니다.
+                    SizedBox(width: SizeConfig.getProportionateWidth(10)),
+                    // "OR" 텍스트를 표시합니다.
                     Text('OR', style: Appstyles.normalTextStyle),
-                    SizedBox(height: SizeConfig.getProportionateHeight(5)),
+                    // "OR" 텍스트와 구분선 사이의 간격을 줍니다.
+                    SizedBox(width: SizeConfig.getProportionateWidth(10)),
+                    // 오른쪽 구분선입니다. 화면 너비의 40%를 차지합니다.
                     Container(
                       height: SizeConfig.getProportionateHeight(1),
                       width: SizeConfig.screenWidth * 0.40,
@@ -157,10 +165,13 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ],
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(10)),
-                // google, apple, facebook버튼 UI Row
+                // 소셜 로그인 버튼들을 표시하는 UI입니다.
+                // Row를 사용하여 버튼들을 가로로 나란히 배치합니다.
                 Row(
+                  // 버튼들 사이에 동일한 간격을 줍니다.
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    // 구글 로그인 버튼
                     Container(
                       height: SizeConfig.getProportionateHeight(40),
                       width: SizeConfig.screenWidth * 0.25,
@@ -178,6 +189,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         color: Colors.deepOrange,
                       ),
                     ),
+                    // 애플 로그인 버튼
                     Container(
                       height: SizeConfig.getProportionateHeight(40),
                       width: SizeConfig.screenWidth * 0.25,
@@ -195,6 +207,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                         color: Colors.black,
                       ),
                     ),
+                    // 페이스북 로그인 버튼
                     Container(
                       height: SizeConfig.getProportionateHeight(40),
                       width: SizeConfig.screenWidth * 0.25,
@@ -215,6 +228,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   ],
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(40)),
+                // 계정이 없는 사용자를 위한 회원가입 화면 이동 UI입니다.
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -223,13 +237,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       style: Appstyles.normalTextStyle,
                     ),
                     // GestureDetector는 터치 이벤트를 감지하는 위젯입니다.
-                    // Sign up을 터치할수 있게 됩니다.
+                    // 'Register' 텍스트를 터치하면 회원가입 화면으로 이동합니다.
                     GestureDetector(
                       onTap: () {
+                        // GoRouter를 사용하여 이름이 지정된 라우트('register')로 화면을 전환합니다.
                         context.goNamed(AppRoutes.register.name);
                       },
                       child: Text(
-                        ' Register',
+                        ' Register👤',
                         style: Appstyles.normalTextStyle.copyWith(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
