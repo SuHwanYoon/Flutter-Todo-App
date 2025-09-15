@@ -16,14 +16,14 @@ class AuthRepository {
   // final _auth = FirebaseAuth.instance;
   final FirebaseAuth _auth;
 
-  /// 이메일과 비밀번호로 사용자를 로그인합니다.
+  /// FirebaseAuth로 이메일과 비밀번호로 사용자를 로그인합니다.
   ///
   /// [Future]는 한 번만 반환되는 비동기 작업의 결과를 표현하는 객체입니다.
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  /// 이메일과 비밀번호로 새로운 사용자를 생성합니다.
+  /// FirebaseAuth로 이메일과 비밀번호로 새로운 사용자를 생성합니다.
   Future<void> createUserWithEmailAndPassword(
     String email,
     String password,

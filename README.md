@@ -22,6 +22,9 @@ Here are some screenshots of the user authentication interface:
 | :---: | :---: |
 | <img src="screenShots/login_widget4.png" width="250"> | <img src="screenShots/register_wiget1.png" width="250"> |
 
+| Login Screen with Error Message |
+| :---: |
+| <img src="screenShots/login_empty_error_message1.png" width="250"> |
 
 ## 🛠️ Technologies Used
 
