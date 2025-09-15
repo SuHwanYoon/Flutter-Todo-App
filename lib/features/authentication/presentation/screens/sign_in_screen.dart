@@ -1,6 +1,8 @@
 // Flutter의 Material Design 위젯과 Riverpod 상태 관리를 위해 필요한 패키지들을 가져옵니다.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_todo_app/common_wigets/async_value_ui.dart';
+import 'package:flutter_todo_app/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:flutter_todo_app/features/authentication/presentation/widgets/common_text_field.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
@@ -33,6 +35,36 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   // '이용약관 동의' 체크박스의 상태를 저장하는 변수.
   bool isChecked = false;
 
+  // 로그인 검증 void method
+  void _validateDetails() {
+    String email = _emailEditingController.text.trim();
+    String password = _passwordEditingController.text.trim();
+    // 이메일 또는 비밀번호가 비어있는 경우, 사용자에게 알림을 표시합니다.
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please fill in all fields',
+            style: Appstyles.normalTextStyle.copyWith(color: Colors.red),
+          ),
+          duration: const Duration(seconds: 10),
+          backgroundColor: Colors.white,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 10,
+        ),
+      );
+    } else {
+      // 이메일 비밀번호가 입력되어있을경우
+      // authController 를 구독
+      ref
+          .read(authControllerProvider.notifier)
+          .signInWithEmailAndPassword(email: email, password: password);
+    }
+  }
+
   @override
   // 위젯이 화면에서 사라질 때 호출되는 메소드입니다.
   // 컨트롤러들이 더 이상 필요 없을 때 메모리 누수를 방지하기 위해 dispose()를 호출해 리소스를 해제합니다.
@@ -48,6 +80,16 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Widget build(BuildContext context) {
     // 화면 크기에 따라 위젯 크기를 동적으로 조절하기 위해 SizeConfig를 초기화합니다.
     SizeConfig.init(context);
+
+    // authController 구독 state변수
+    final state = ref.watch(authControllerProvider);
+
+    // errorState 상황 구독
+    //  _ 는 사용하지않을 이전상태 , state는 현재상태
+    ref.listen<AsyncValue>(authControllerProvider, ( _ , state) {
+      state.showAlertDialogOnError(context);
+    });
+
     // Scaffold를 가장 바깥쪽에 두어 화면 전체의 레이아웃을 잡습니다.
     return Scaffold(
       // body의 내용물만 SafeArea로 감싸서 시스템 UI(상태바, 노치 등)를 피하게 합니다.
@@ -113,8 +155,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 SizedBox(height: SizeConfig.getProportionateHeight(25)),
                 // InkWell 위젯은 자식 위젯에 탭 효과(물결 효과)를 추가합니다.
                 InkWell(
-                  // 탭했을 때 실행될 로직을 여기에 작성합니다. 지금은 비어있습니다.
-                  onTap: () {},
+                  // 탭했을 때 실행될 로직을 여기에 작성합니다.
+                  // validateDetails검증 로직사용
+                  onTap: _validateDetails,
                   // 버튼의 모양을 정의하는 Container 위젯입니다.
                   child: Container(
                     alignment: Alignment.center,
@@ -126,14 +169,17 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     // 버튼 내부에 표시될 텍스트입니다.
-                    child: Text(
-                      'Sign In 🔓',
-                      style: Appstyles.normalTextStyle.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                      ),
-                    ),
+                    // 인증 state가 isLoading중이면 버튼에 원형의 로딩을 표시
+                    child: state.isLoading
+                        ? const CircularProgressIndicator()
+                        : Text(
+                            'Sign In 🔓',
+                            style: Appstyles.normalTextStyle.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                            ),
+                          ),
                   ),
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(10)),
