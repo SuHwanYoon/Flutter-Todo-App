@@ -10,7 +10,7 @@ import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
-// SignInScreen은 위제 클래스 입니다.
+// SignInScreen은 위젯 클래스 입니다.
 // SignInScreen은 ConsumerStatefulWidget입니다.
 // 일반 StatefulWidget과 비슷하지만, Riverpod의 Provider를 구독하고 상태 변화에 반응할 수 있는 기능이 추가되었습니다.
 // 여기에서는 로그인상태에 따라서 다른 화면으로 이동하는 로직이 포함될 예정입니다.
@@ -35,30 +35,38 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   // '이용약관 동의' 체크박스의 상태를 저장하는 변수.
   bool isChecked = false;
 
-  // 로그인 검증 void method
+  // 로그인 검증 및 실행을 위한 메서드입니다.
   void _validateDetails() {
+    // 입력된 이메일과 비밀번호의 앞뒤 공백을 제거합니다.
     String email = _emailEditingController.text.trim();
     String password = _passwordEditingController.text.trim();
     // 이메일 또는 비밀번호가 비어있는 경우, 사용자에게 알림을 표시합니다.
     if (email.isEmpty || password.isEmpty) {
+      // ScaffoldMessenger를 사용하여 화면 하단에 SnackBar를 표시합니다.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          // SnackBar에 표시될 메시지입니다.
           content: Text(
             'Please fill in all fields',
             style: Appstyles.normalTextStyle.copyWith(color: Colors.red),
           ),
+          // SnackBar가 표시될 시간입니다.
           duration: const Duration(seconds: 10),
+          // SnackBar의 배경색입니다.
           backgroundColor: Colors.white,
+          // SnackBar의 동작 방식입니다. floating은 화면 하단에 떠 있는 형태입니다.
           behavior: SnackBarBehavior.floating,
+          // SnackBar의 모양입니다. 모서리를 둥글게 만듭니다.
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
+          // SnackBar의 그림자 효과입니다.
           elevation: 10,
         ),
       );
     } else {
-      // 이메일 비밀번호가 입력되어있을경우
-      // authController 를 구독
+      // 이메일과 비밀번호가 모두 입력된 경우,
+      // authControllerProvider의 notifier를 통해 signInWithEmailAndPassword 메서드를 호출하여 로그인을 시도합니다.
       ref
           .read(authControllerProvider.notifier)
           .signInWithEmailAndPassword(email: email, password: password);
@@ -81,12 +89,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     // 화면 크기에 따라 위젯 크기를 동적으로 조절하기 위해 SizeConfig를 초기화합니다.
     SizeConfig.init(context);
 
-    // authController 구독 state변수
+    // authControllerProvider를 구독하여 인증 상태(state)의 변화를 감지합니다.
+    // ref.watch는 provider의 상태가 변경될 때마다 build 메서드를 다시 실행하여 UI를 업데이트합니다.
     final state = ref.watch(authControllerProvider);
 
-    // errorState 상황 구독
-    //  _ 는 사용하지않을 이전상태 , state는 현재상태
+    // authControllerProvider의 상태 변화를 감지하지만, UI를 재빌드하지는 않습니다.
+    // 주로 화면 전환, 다이얼로그 표시 등 특정 액션을 수행할 때 사용됩니다.
+    // `_`는 이전 상태를 의미하며, 여기서는 사용하지 않습니다. `state`는 현재 상태입니다.
     ref.listen<AsyncValue>(authControllerProvider, ( _ , state) {
+      // AsyncValueUi 확장 메서드를 사용하여 에러가 발생했을 때 다이얼로그를 표시합니다.
       state.showAlertDialogOnError(context);
     });
 
@@ -155,8 +166,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 SizedBox(height: SizeConfig.getProportionateHeight(25)),
                 // InkWell 위젯은 자식 위젯에 탭 효과(물결 효과)를 추가합니다.
                 InkWell(
-                  // 탭했을 때 실행될 로직을 여기에 작성합니다.
-                  // validateDetails검증 로직사용
+                  // 탭했을 때 _validateDetails 메서드를 호출하여 로그인 검증을 수행합니다.
                   onTap: _validateDetails,
                   // 버튼의 모양을 정의하는 Container 위젯입니다.
                   child: Container(
@@ -168,10 +178,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       color: Colors.orange,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    // 버튼 내부에 표시될 텍스트입니다.
-                    // 인증 state가 isLoading중이면 버튼에 원형의 로딩을 표시
+                    // 버튼 내부에 표시될 텍스트 또는 로딩 인디케이터입니다.
+                    // 인증 상태(state)가 로딩 중이면 CircularProgressIndicator를 표시하고,
+                    // 그렇지 않으면 'Sign In' 텍스트를 표시합니다.
                     child: state.isLoading
-                        ? const CircularProgressIndicator()
+                        ? const CircularProgressIndicator(color: Colors.white)
                         : Text(
                             'Sign In 🔓',
                             style: Appstyles.normalTextStyle.copyWith(

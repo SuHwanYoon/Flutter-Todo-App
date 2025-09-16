@@ -1,6 +1,8 @@
 // Flutter의 Material Design 위젯과 Riverpod 상태 관리를 위해 필요한 패키지들을 가져옵니다.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_todo_app/common_wigets/async_value_ui.dart';
+import 'package:flutter_todo_app/features/authentication/presentation/controllers/auth_controller.dart';
 import 'package:flutter_todo_app/features/authentication/presentation/widgets/common_text_field.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
@@ -32,6 +34,44 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   // '이용약관 동의' 체크박스의 상태를 저장하는 변수.
   bool isChecked = false;
 
+  // 회원가입 검증 및 실행을 위한 메서드입니다.
+  void _validateDetails() {
+    // 입력된 이메일과 비밀번호의 앞뒤 공백을 제거합니다.
+    String email = _emailEditingController.text.trim();
+    String password = _passwordEditingController.text.trim();
+    // 이메일 또는 비밀번호가 비어있는 경우, 사용자에게 알림을 표시합니다.
+    if (email.isEmpty || password.isEmpty) {
+      // ScaffoldMessenger를 사용하여 화면 하단에 SnackBar를 표시합니다.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          // SnackBar에 표시될 메시지입니다.
+          content: Text(
+            'Please fill in all fields',
+            style: Appstyles.normalTextStyle.copyWith(color: Colors.red),
+          ),
+          // SnackBar가 표시될 시간입니다.
+          duration: const Duration(seconds: 10),
+          // SnackBar의 배경색입니다.
+          backgroundColor: Colors.white,
+          // SnackBar의 동작 방식입니다. floating은 화면 하단에 떠 있는 형태입니다.
+          behavior: SnackBarBehavior.floating,
+          // SnackBar의 모양입니다. 모서리를 둥글게 만듭니다.
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          // SnackBar의 그림자 효과입니다.
+          elevation: 10,
+        ),
+      );
+    } else {
+      // 이메일과 비밀번호가 모두 입력된 경우,
+      // authControllerProvider의 notifier를 통해 createUserWithEmailAndPassword 메서드를 호출하여 회원가입을 시도합니다.
+      ref
+          .read(authControllerProvider.notifier)
+          .createUserWithEmailAndPassword(email: email, password: password);
+    }
+  }
+
   @override
   // 위젯이 화면에서 사라질 때 호출되는 메소드입니다.
   // 컨트롤러들이 더 이상 필요 없을 때 메모리 누수를 방지하기 위해 dispose()를 호출해 리소스를 해제합니다.
@@ -47,6 +87,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     // 화면 크기에 따라 위젯 크기를 동적으로 조절하기 위해 SizeConfig를 초기화합니다.
     SizeConfig.init(context);
+
+    // authControllerProvider를 구독하여 인증 상태(state)의 변화를 감지합니다.
+    // ref.watch는 provider의 상태가 변경될 때마다 build 메서드를 다시 실행하여 UI를 업데이트합니다.
+    final state = ref.watch(authControllerProvider);
+
+    // authControllerProvider의 상태 변화를 감지하지만, UI를 재빌드하지는 않습니다.
+    // 주로 화면 전환, 다이얼로그 표시 등 특정 액션을 수행할 때 사용됩니다.
+    // `_`는 이전 상태를 의미하며, 여기서는 사용하지 않습니다. `state`는 현재 상태입니다.
+    ref.listen<AsyncValue>(authControllerProvider, (_, state) {
+      // AsyncValueUi 확장 메서드를 사용하여 에러가 발생했을 때 다이얼로그를 표시합니다.
+      state.showAlertDialogOnError(context);
+    });
+
     // Scaffold를 가장 바깥쪽에 두어 화면 전체의 레이아웃을 잡습니다.
     return Scaffold(
       // body의 내용물만 SafeArea로 감싸서 시스템 UI(상태바, 노치 등)를 피하게 합니다.
@@ -113,7 +166,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 // InkWell 위젯은 자식 위젯에 탭 효과(물결 효과)를 추가합니다.
                 InkWell(
                   // 탭했을 때 실행될 로직을 여기에 작성합니다. 지금은 비어있습니다.
-                  onTap: () {},
+                  onTap: _validateDetails,
                   // 버튼의 모양을 정의하는 Container 위젯입니다.
                   child: Container(
                     alignment: Alignment.center,
@@ -125,14 +178,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     // 버튼 내부에 표시될 텍스트입니다.
-                    child: Text(
-                      'Sign Up 👤',
-                      style: Appstyles.normalTextStyle.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                      ),
-                    ),
+                    // state.isLoading이 true면 로딩 인디케이터를, 
+                    //아니면 'Sign Up' 텍스트를 표시합니다.
+                    child: state.isLoading
+                        ? const CircularProgressIndicator()
+                        : Text(
+                            'Sign Up 👤',
+                            style: Appstyles.normalTextStyle.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                            ),
+                          ),
                   ),
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(10)),
