@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/firebase_options.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
@@ -17,6 +18,18 @@ void main() async {
   // DefaultFirebaseOptions.currentPlatform는 현재 플랫폼(iOS, Android 등)에 맞는
   // Firebase 설정을 자동으로 가져옵니다.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // 시스템 UI 오버레이 스타일을 설정하여 상단 상태 표시줄의 색상을 지정합니다.
+  // 이 코드는 iOS와 Android 모두에서 일관된 상태 표시줄 스타일을 보장합니다.
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      // 상태 표시줄의 배경색을 초록색으로 설정합니다. (주로 Android에서 사용)
+      statusBarColor: Colors.green,
+      // 상태 표시줄의 아이콘(시간, 배터리 등) 색상을 밝게 설정합니다. (어두운 배경에 적합)
+      statusBarIconBrightness: Brightness.light, // Android
+      statusBarBrightness: Brightness.dark, // iOS
+    ),
+  );
 
   // 앱의 최상위 위젯을 실행합니다.
   // ProviderScope는 Riverpod를 사용하기 위해 앱 전체를 감싸주는 위젯입니다.

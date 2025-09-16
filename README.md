@@ -22,9 +22,13 @@ Here are some screenshots of the user authentication interface:
 | :---: | :---: |
 | <img src="screenShots/login_widget4.png" width="250"> | <img src="screenShots/register_wiget1.png" width="250"> |
 
-| Login Screen with Error Message |
+| Login Screen with Error Message | Login with No Account Message |
+| :---: | :---: |
+| <img src="screenShots/login_empty_error_message1.png" width="250"> | <img src="screenShots/login_no_account_message1.png" width="250"> |
+
+| Register Success |
 | :---: |
-| <img src="screenShots/login_empty_error_message1.png" width="250"> |
+| <img src="screenShots/register_success1.png" width="500"> |
 
 ## 🛠️ Technologies Used
 
