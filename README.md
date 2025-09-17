@@ -30,6 +30,13 @@ Here are some screenshots of the user authentication interface:
 | :---: |
 | <img src="screenShots/register_success1.png" width="500"> |
 
+### Tapbar & NavigationBar
+
+| Home Screen | Account Screen |
+| :---: | :---: |
+| <img src="screenShots/home_screen_wiget.png" width="250"> | <img src="screenShots/account_screen_wiget.png" width="250"> |
+
+
 ## 🛠️ Technologies Used
 
 - **Frontend**: [Flutter](https://flutter.dev/)
