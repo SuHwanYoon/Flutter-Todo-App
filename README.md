@@ -36,6 +36,12 @@ Here are some screenshots of the user authentication interface:
 | :---: | :---: |
 | <img src="screenShots/home_screen_wiget.png" width="250"> | <img src="screenShots/account_screen_wiget.png" width="250"> |
 
+### Add Task Screen
+
+| Add Task 1 | Add Task 2 | Add Task 3 |
+| :---: | :---: | :---: |
+| <img src="screenShots/add_screen_wiget1.png" width="250"> | <img src="screenShots/add_screen_wiget2.png" width="250"> | <img src="screenShots/add_screen_wiget3.png" width="250"> |
+
 
 ## 🛠️ Technologies Used
 
