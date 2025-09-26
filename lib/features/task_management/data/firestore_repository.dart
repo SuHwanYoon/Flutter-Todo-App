@@ -5,6 +5,6 @@ class FirestoreRepository {
 
   final FirebaseFirestore _firestore;
 
- 
+  
 
 }
