@@ -4,6 +4,8 @@ import 'package:flutter_todo_app/features/task_management/presentation/widgets/t
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 
+// AddTaskScreen은 새로운 작업을 추가하는 화면을 담당하는 StatefulWidget입니다.
+// ConsumerStatefulWidget을 상속하여 Riverpod의 상태 관리를 사용합니다.
 class AddTaskScreen extends ConsumerStatefulWidget {
   const AddTaskScreen({super.key});
 
@@ -12,14 +14,18 @@ class AddTaskScreen extends ConsumerStatefulWidget {
 }
 
 class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
+  // 제목과 설명을 입력받기 위한 TextEditingController입니다.
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  // 아래 위젯버튼에서 사용할 텍스트 리스트로 선언
+
+  // 우선순위 선택 버튼에 사용될 텍스트 리스트입니다.
   final List<String> _priorities = ['Low', 'Medium', 'High'];
+  // 현재 선택된 우선순위의 인덱스를 저장하는 변수입니다.
   int _selectedPriorityIndex = 0;
 
   @override
   void dispose() {
+    // 위젯이 dispose될 때 컨트롤러를 정리하여 메모리 누수를 방지합니다.
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -27,6 +33,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 화면 크기에 따라 위젯 크기를 조절하기 위해 SizeConfig를 초기화합니다.
     SizeConfig.init(context);
     return Scaffold(
       appBar: AppBar(
@@ -39,6 +46,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
         child: Column(
           children: [
+            // 작업 제목을 입력받는 위젯입니다.
             TitleDescription(
               title: ' Task Title',
               prefixIcon: Icons.notes,
@@ -47,6 +55,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
               controller: _titleController,
             ),
             SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
+            // 작업 설명을 입력받는 위젯입니다.
             TitleDescription(
               title: ' Task Description',
               prefixIcon: Icons.notes,
@@ -55,7 +64,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
               controller: _descriptionController,
             ),
             SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
-            // 우선순위 선택하는 Row 위젯
+            // 우선순위를 선택하는 Row 위젯입니다.
             Row(
               children: [
                 Text(
@@ -67,6 +76,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                 Expanded(
                   child: SizedBox(
                     height: SizeConfig.getProportionateHeight(40),
+                    // 우선순위 버튼들을 가로로 나열하기 위해 ListView.builder를 사용합니다.
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: _priorities.length,
@@ -91,6 +101,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
+                              // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
                               color: _selectedPriorityIndex == index
                                   ? Colors.green
                                   : Colors.grey,
@@ -98,6 +109,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                             child: Text(
                               priority,
                               style: Appstyles.normalTextStyle.copyWith(
+                                // 선택된 우선순위에 따라 텍스트 색상을 변경합니다.
                                 color: _selectedPriorityIndex == index
                                     ? Colors.white
                                     : Colors.black,
@@ -113,8 +125,11 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
               ],
             ),
             SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
+            // 'Add Task' 버튼입니다.
             InkWell(
-              onTap: () {},
+              onTap: () {
+                // TODO: 작업 추가 로직 구현
+              },
               child: Container(
                 alignment: Alignment.center,
                 height: SizeConfig.getProportionateHeight(50),
