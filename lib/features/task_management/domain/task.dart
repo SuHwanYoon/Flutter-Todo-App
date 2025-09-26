@@ -5,6 +5,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'task.freezed.dart';
 part 'task.g.dart';
 
+//_$Task는 Freezed가 만들어주는 copyWith, equality, toString, hashCode 등 기능을 포함한 mixin
+// _Task는 실제 객체 구현체
 @freezed
 abstract class Task with _$Task {
   const factory Task({
