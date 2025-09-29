@@ -11,8 +11,8 @@ _Task _$TaskFromJson(Map<String, dynamic> json) => _Task(
   title: json['title'] as String,
   description: json['description'] as String,
   priority: json['priority'] as String,
-  isCompleted: json['isCompleted'] as bool,
   date: DateTime.parse(json['date'] as String),
+  isCompleted: json['isCompleted'] as bool,
 );
 
 Map<String, dynamic> _$TaskToJson(_Task instance) => <String, dynamic>{
@@ -20,6 +20,6 @@ Map<String, dynamic> _$TaskToJson(_Task instance) => <String, dynamic>{
   'title': instance.title,
   'description': instance.description,
   'priority': instance.priority,
-  'isCompleted': instance.isCompleted,
   'date': instance.date.toIso8601String(),
+  'isCompleted': instance.isCompleted,
 };
