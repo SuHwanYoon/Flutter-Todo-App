@@ -1,14 +1,16 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/features/task_management/data/firestore_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'firestore_controller.g.dart';
 
 // FirestoreController는 firestore_repository.dart의 FirestoreRepository를 사용하여
-// Firestore 데이터베이스와 상호작용합니다.
-// FirestoreController는 Firestore와 상호작용하는 비동기 작업을 관리하는 컨트롤러입니다.
+// Firestore 데이터베이스와 간접적으로 상호작용합니다.
 // AsyncNotifier를 상속하여 비동기 상태 관리를 제공합니다.
-class FirestoreController extends AsyncNotifier<void> {
+@riverpod
+class FirestoreController extends _$FirestoreController {
   @override
   FutureOr<void> build() {
     // 초기화 작업이 필요하면 여기에 작성합니다.

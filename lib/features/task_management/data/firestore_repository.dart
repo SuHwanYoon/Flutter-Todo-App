@@ -7,7 +7,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 // 이는 firestore_repository.g.dart 파일이 이 파일과 연결되어 있음을 나타냅니다.
 part 'firestore_repository.g.dart';
 
-
+// FirestoreRepository 클래스는 Firestore 데이터베이스와 상호작용하는 역할을 합니다.
+// 이 클래스는 작업 추가, 업데이트, 삭제 및 로드와 같은 기능을 제공합니다.
 class FirestoreRepository {
   // 생성자에서 Firestore 인스턴스를 주입받습니다.
   // 이는 의존성 주입(Dependency Injection) 패턴을 사용하여 테스트 용이성과 유연성을 높입니다.

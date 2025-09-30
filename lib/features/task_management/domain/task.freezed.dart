@@ -19,7 +19,7 @@ mixin _$Task {
  String get title;// 작업 제목
  String get description;// 작업 설명
  String get priority;// 우선순위 ('Low', 'Medium', 'High')
- DateTime get date;// 작업 날짜
+@TimestampConverter() DateTime get date;// 작업 날짜
  bool get isCompleted;
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
@@ -53,7 +53,7 @@ abstract mixin class $TaskCopyWith<$Res>  {
   factory $TaskCopyWith(Task value, $Res Function(Task) _then) = _$TaskCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String description, String priority, DateTime date, bool isCompleted
+ String id, String title, String description, String priority,@TimestampConverter() DateTime date, bool isCompleted
 });
 
 
@@ -163,7 +163,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String priority,  DateTime date,  bool isCompleted)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String priority, @TimestampConverter()  DateTime date,  bool isCompleted)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Task() when $default != null:
 return $default(_that.id,_that.title,_that.description,_that.priority,_that.date,_that.isCompleted);case _:
@@ -184,7 +184,7 @@ return $default(_that.id,_that.title,_that.description,_that.priority,_that.date
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String priority,  DateTime date,  bool isCompleted)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  String priority, @TimestampConverter()  DateTime date,  bool isCompleted)  $default,) {final _that = this;
 switch (_that) {
 case _Task():
 return $default(_that.id,_that.title,_that.description,_that.priority,_that.date,_that.isCompleted);case _:
@@ -204,7 +204,7 @@ return $default(_that.id,_that.title,_that.description,_that.priority,_that.date
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String priority,  DateTime date,  bool isCompleted)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  String priority, @TimestampConverter()  DateTime date,  bool isCompleted)?  $default,) {final _that = this;
 switch (_that) {
 case _Task() when $default != null:
 return $default(_that.id,_that.title,_that.description,_that.priority,_that.date,_that.isCompleted);case _:
@@ -219,10 +219,10 @@ return $default(_that.id,_that.title,_that.description,_that.priority,_that.date
 @JsonSerializable()
 
 class _Task implements Task {
-  const _Task({required this.id, required this.title, required this.description, required this.priority, required this.date, required this.isCompleted});
+  const _Task({this.id = '', required this.title, required this.description, required this.priority, @TimestampConverter() required this.date, this.isCompleted = false});
   factory _Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 
-@override final  String id;
+@override@JsonKey() final  String id;
 // 작업의 고유 ID
 @override final  String title;
 // 작업 제목
@@ -230,9 +230,9 @@ class _Task implements Task {
 // 작업 설명
 @override final  String priority;
 // 우선순위 ('Low', 'Medium', 'High')
-@override final  DateTime date;
+@override@TimestampConverter() final  DateTime date;
 // 작업 날짜
-@override final  bool isCompleted;
+@override@JsonKey() final  bool isCompleted;
 
 /// Create a copy of Task
 /// with the given fields replaced by the non-null parameter values.
@@ -267,7 +267,7 @@ abstract mixin class _$TaskCopyWith<$Res> implements $TaskCopyWith<$Res> {
   factory _$TaskCopyWith(_Task value, $Res Function(_Task) _then) = __$TaskCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String description, String priority, DateTime date, bool isCompleted
+ String id, String title, String description, String priority,@TimestampConverter() DateTime date, bool isCompleted
 });
 
 
