@@ -1,5 +1,6 @@
 // freezed, part 키워드를 사용하여 freezed와 json_serializable 라이브러리를 현재 파일에 연결합니다.
 // 이를 통해 불변 데이터 클래스와 직렬화 코드를 자동으로 생성할 수 있습니다.
+import 'package:flutter_todo_app/utils/time_stamp_converter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'task.freezed.dart';
@@ -13,12 +14,12 @@ abstract class Task with _$Task {
   // Task 클래스의 생성자입니다.
   // required 키워드를 사용하여 모든 필드가 필수적으로 초기화되어야 함을 명시합니다.
   const factory Task({
-    required String id, // 작업의 고유 ID
+    @Default('') String id, // 작업의 고유 ID
     required String title, // 작업 제목
     required String description, // 작업 설명
     required String priority, // 우선순위 ('Low', 'Medium', 'High')
-    required DateTime date, // 작업 날짜
-    required bool isCompleted, // 완료 여부
+    @TimestampConverter() required DateTime date, // 작업 날짜
+    @Default(false) bool isCompleted, // 완료 여부
   }) = _Task; // _Task는 freezed에 의해 생성될 구현 클래스입니다.
 
   // JSON 데이터를 Task 객체로 변환하는 factory 생성자입니다.

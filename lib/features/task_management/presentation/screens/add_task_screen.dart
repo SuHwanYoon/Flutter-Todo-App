@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_todo_app/common_wigets/async_value_ui.dart';
+import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
+import 'package:flutter_todo_app/features/task_management/domain/task.dart';
+import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/widgets/title_description.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
@@ -30,11 +34,28 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
     _descriptionController.dispose();
     super.dispose();
   }
-
+  // widget을 그리는 build 메서드는 BuildContext를 매개변수로 받습니다.
+  // BuildContext의 역할은 위젯 트리에서 현재 위젯의 위치를 나타내며,
+  // 부모 위젯에 접근하거나 테마, 미디어 쿼리 등의 정보를 가져오는 데 사용됩니다.
+  // 이 메서드에서는 화면의 레이아웃과 UI 요소들을 정의합니다.
   @override
   Widget build(BuildContext context) {
     // 화면 크기에 따라 위젯 크기를 조절하기 위해 SizeConfig를 초기화합니다.
     SizeConfig.init(context);
+    // 현재 로그인된 사용자의 ID를 가져옵니다.
+    // 실제 앱에서는 이 값을 사용하여 작업을 해당 사용자에게 연결해야 합니다.
+    // 예를 들어, Firestore에 작업을 추가할 때 userId를 사용하여
+    // 특정 사용자의 작업 컬렉션에 저장할 수 있습니다.
+    final userId = ref.watch(currentUserProvider)?.uid ?? '';
+    // 위젯 내부에서 사용될 FirestoreController의 상태를 구독해서 선언
+    final state = ref.watch(firestoreControllerProvider);
+
+    // 비동기 상태에 따라 UI를 업데이트합니다.
+    // 오류가 발생하면 알림 대화상자를 표시합니다. 
+    ref.listen<AsyncValue>(firestoreControllerProvider, (_, state) {
+      state.showAlertDialogOnError(context);
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -125,10 +146,29 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
               ],
             ),
             SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
+            // InkWell 위젯은 탭 이벤트를 감지하는 위젯입니다.
             // 'Add Task' 버튼입니다.
+            // onTap 속성은 사용자가 버튼을 탭했을 때 실행될 콜백 함수를 정의합니다.
             InkWell(
               onTap: () {
-                // TODO: 작업 추가 로직 구현
+                final title = _titleController.text.trim();
+                final description = _descriptionController.text.trim();
+                String priority = _priorities[_selectedPriorityIndex];
+                DateTime date = DateTime.now();
+
+                final myTask = Task(
+                  title: title,
+                  description: description,
+                  priority: priority,
+                  date: date,
+                );
+                // 사용자가 add task버튼을 누르면
+                // FirestoreController를 통해 새로운 작업을 추가합니다.
+                // userId와 myTask 객체를 전달하여 특정 사용자에게 작업을 연결합니다.
+                ref.read(firestoreControllerProvider.notifier).addTask(
+                      userId: userId, 
+                      task: myTask,
+                    );
               },
               child: Container(
                 alignment: Alignment.center,
@@ -138,7 +178,9 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.blue,
                 ),
-                child: Row(
+                // 버튼 내부의 내용을 조건에 따라 다르게 표시합니다.
+                // 로딩 중일 때는 CircularProgressIndicator를 표시하고, 아닐 때는 Row를 표시합니다.
+                child: state.isLoading? const CircularProgressIndicator() : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   // 'Add Task' 버튼 내부에 아이콘과 텍스트를 배치합니다.
                   children: [
