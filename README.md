@@ -42,6 +42,26 @@ Here are some screenshots of the user authentication interface:
 | :---: | :---: | :---: |
 | <img src="screenShots/add_screen_wiget1.png" width="250"> | <img src="screenShots/add_screen_wiget2.png" width="250"> | <img src="screenShots/add_screen_wiget3.png" width="250"> |
 
+### Add Task to Firestore
+
+The user can create a task, which is then saved to Firestore.
+
+| Add Task to Firestore 1 |
+| :---: |
+| <img src="screenShots/add_task_firestore1.png" width="500"> |
+
+| Add Task to Firestore 2 |
+| :---: |
+| <img src="screenShots/add_task_firestore2.png" width="500"> |
+
+### Home Screen (All Tasks)
+
+The home screen displays a list of all the tasks that have been added.
+
+| All Task Screen |
+| :---: |
+| <img src="screenShots/all_task_screen1.png" width="250"> |
+
 
 ## 🛠️ Technologies Used
 

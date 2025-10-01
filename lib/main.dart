@@ -76,6 +76,20 @@ class MyApp extends ConsumerWidget {
         // ios의 경우 Cupertino 디자인이 기본이지만,
         // Material 3를 적용하면 안드로이드와 유사한 디자인이 됩니다
         useMaterial3: true,
+        // ios, android모두에서 동일한 UI를 위해 appbarTheme를 주석처리합니다.
+        // 만약 ios에서 Cupertino 디자인을 유지하고 싶다면
+        // appBarTheme를 주석처리하고, statusBarBrightness만 설정하면 됩니다
+        // appBarTheme는 앱바의 전반적인 스타일을 지정합니다.
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          // foregroundColor는 앱바의 아이콘과 텍스트 색상을 지정합니다.
+          foregroundColor: Colors.black,
+          titleTextStyle: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Colors.black
+          ),
+        ),
       ),
     );
   }

@@ -56,147 +56,148 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
       state.showAlertDialogOnError(context);
     });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Add Task',
-          style: Appstyles.titleTextStyle.copyWith(color: Colors.white),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Add Task',
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-        child: Column(
-          children: [
-            // 작업 제목을 입력받는 위젯입니다.
-            TitleDescription(
-              title: ' Task Title',
-              prefixIcon: Icons.notes,
-              hintText: 'Enter task title',
-              maxLines: 1,
-              controller: _titleController,
-            ),
-            SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
-            // 작업 설명을 입력받는 위젯입니다.
-            TitleDescription(
-              title: ' Task Description',
-              prefixIcon: Icons.notes,
-              hintText: 'Enter task description',
-              maxLines: 3,
-              controller: _descriptionController,
-            ),
-            SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
-            // 우선순위를 선택하는 Row 위젯입니다.
-            Row(
-              children: [
-                Text(
-                  'Priority',
-                  style: Appstyles.headingTextStyle.copyWith(
-                    fontSize: SizeConfig.getProportionateHeight(18),
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+          child: Column(
+            children: [
+              // 작업 제목을 입력받는 위젯입니다.
+              TitleDescription(
+                title: ' Task Title',
+                prefixIcon: Icons.notes,
+                hintText: 'Enter task title',
+                maxLines: 1,
+                controller: _titleController,
+              ),
+              SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
+              // 작업 설명을 입력받는 위젯입니다.
+              TitleDescription(
+                title: ' Task Description',
+                prefixIcon: Icons.notes,
+                hintText: 'Enter task description',
+                maxLines: 3,
+                controller: _descriptionController,
+              ),
+              SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
+              // 우선순위를 선택하는 Row 위젯입니다.
+              Row(
+                children: [
+                  Text(
+                    'Priority',
+                    style: Appstyles.headingTextStyle.copyWith(
+                      fontSize: SizeConfig.getProportionateHeight(18),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: SizedBox(
-                    height: SizeConfig.getProportionateHeight(40),
-                    // 우선순위 버튼들을 가로로 나열하기 위해 ListView.builder를 사용합니다.
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _priorities.length,
-                      itemBuilder: (context, index) {
-                        final priority = _priorities[index];
-                        // GestureDetector는 탭 이벤트를 감지하는 위젯입니다.
-                        // 사용자가 우선순위 버튼을 탭하면 _selectedPriorityIndex를 업데이트하고
-                        // 화면을 다시 그려 선택된 우선순위가 시각적으로 표시되도록 합니다.
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedPriorityIndex = index;
-                            });
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              left: SizeConfig.getProportionateWidth(8.0),
-                            ),
-                            padding: EdgeInsets.all(
-                              SizeConfig.getProportionateHeight(8.0),
-                            ),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
-                              color: _selectedPriorityIndex == index
-                                  ? Colors.green
-                                  : Colors.grey,
-                            ),
-                            child: Text(
-                              priority,
-                              style: Appstyles.normalTextStyle.copyWith(
-                                // 선택된 우선순위에 따라 텍스트 색상을 변경합니다.
+                  Expanded(
+                    child: SizedBox(
+                      height: SizeConfig.getProportionateHeight(40),
+                      // 우선순위 버튼들을 가로로 나열하기 위해 ListView.builder를 사용합니다.
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _priorities.length,
+                        itemBuilder: (context, index) {
+                          final priority = _priorities[index];
+                          // GestureDetector는 탭 이벤트를 감지하는 위젯입니다.
+                          // 사용자가 우선순위 버튼을 탭하면 _selectedPriorityIndex를 업데이트하고
+                          // 화면을 다시 그려 선택된 우선순위가 시각적으로 표시되도록 합니다.
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedPriorityIndex = index;
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                left: SizeConfig.getProportionateWidth(8.0),
+                              ),
+                              padding: EdgeInsets.all(
+                                SizeConfig.getProportionateHeight(8.0),
+                              ),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
                                 color: _selectedPriorityIndex == index
-                                    ? Colors.white
-                                    : Colors.black,
-                                fontSize: 20,
+                                    ? Colors.green
+                                    : Colors.grey,
+                              ),
+                              child: Text(
+                                priority,
+                                style: Appstyles.normalTextStyle.copyWith(
+                                  // 선택된 우선순위에 따라 텍스트 색상을 변경합니다.
+                                  color: _selectedPriorityIndex == index
+                                      ? Colors.white
+                                      : Colors.black,
+                                  fontSize: 20,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
-            // InkWell 위젯은 탭 이벤트를 감지하는 위젯입니다.
-            // 'Add Task' 버튼입니다.
-            // onTap 속성은 사용자가 버튼을 탭했을 때 실행될 콜백 함수를 정의합니다.
-            InkWell(
-              onTap: () {
-                final title = _titleController.text.trim();
-                final description = _descriptionController.text.trim();
-                String priority = _priorities[_selectedPriorityIndex];
-                DateTime date = DateTime.now();
-
-                final myTask = Task(
-                  title: title,
-                  description: description,
-                  priority: priority,
-                  date: date,
-                );
-                // 사용자가 add task버튼을 누르면
-                // FirestoreController를 통해 새로운 작업을 추가합니다.
-                // userId와 myTask 객체를 전달하여 특정 사용자에게 작업을 연결합니다.
-                ref.read(firestoreControllerProvider.notifier).addTask(
-                      userId: userId, 
-                      task: myTask,
-                    );
-              },
-              child: Container(
-                alignment: Alignment.center,
-                height: SizeConfig.getProportionateHeight(50),
-                width: SizeConfig.screenWidth,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.blue,
-                ),
-                // 버튼 내부의 내용을 조건에 따라 다르게 표시합니다.
-                // 로딩 중일 때는 CircularProgressIndicator를 표시하고, 아닐 때는 Row를 표시합니다.
-                child: state.isLoading? const CircularProgressIndicator() : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  // 'Add Task' 버튼 내부에 아이콘과 텍스트를 배치합니다.
-                  children: [
-                    const Icon(Icons.add, color: Colors.white, size: 30),
-                    Text(
-                      'Add Task',
-                      style: Appstyles.normalTextStyle.copyWith(
-                        color: Colors.white,
-                        fontSize: 20,
+                          );
+                        },
                       ),
                     ),
-                  ],
+                  ),
+                ],
+              ),
+              SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
+              // InkWell 위젯은 탭 이벤트를 감지하는 위젯입니다.
+              // 'Add Task' 버튼입니다.
+              // onTap 속성은 사용자가 버튼을 탭했을 때 실행될 콜백 함수를 정의합니다.
+              InkWell(
+                onTap: () {
+                  final title = _titleController.text.trim();
+                  final description = _descriptionController.text.trim();
+                  String priority = _priorities[_selectedPriorityIndex];
+                  DateTime date = DateTime.now();
+      
+                  final myTask = Task(
+                    title: title,
+                    description: description,
+                    priority: priority,
+                    date: date,
+                  );
+                  // 사용자가 add task버튼을 누르면
+                  // FirestoreController를 통해 새로운 작업을 추가합니다.
+                  // userId와 myTask 객체를 전달하여 특정 사용자에게 작업을 연결합니다.
+                  ref.read(firestoreControllerProvider.notifier).addTask(
+                        userId: userId, 
+                        task: myTask,
+                      );
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  height: SizeConfig.getProportionateHeight(50),
+                  width: SizeConfig.screenWidth,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blue,
+                  ),
+                  // 버튼 내부의 내용을 조건에 따라 다르게 표시합니다.
+                  // 로딩 중일 때는 CircularProgressIndicator를 표시하고, 아닐 때는 Row를 표시합니다.
+                  child: state.isLoading? const CircularProgressIndicator() : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    // 'Add Task' 버튼 내부에 아이콘과 텍스트를 배치합니다.
+                    children: [
+                      const Icon(Icons.add, color: Colors.white, size: 30),
+                      Text(
+                        'Add Task',
+                        style: Appstyles.normalTextStyle.copyWith(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
