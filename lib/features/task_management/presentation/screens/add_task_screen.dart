@@ -124,7 +124,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                                 borderRadius: BorderRadius.circular(10),
                                 // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
                                 color: _selectedPriorityIndex == index
-                                    ? Colors.green
+                                    ? Colors.deepOrange
                                     : Colors.grey,
                               ),
                               child: Text(

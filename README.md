@@ -62,6 +62,16 @@ The home screen displays a list of all the tasks that have been added.
 | :---: |
 | <img src="screenShots/all_task_screen1.png" width="250"> |
 
+### Task Checkbox State Change
+
+| False | False |
+|:---:|:---:|
+| <img src="screenShots/checkbox_false1.png" width="250"> | <img src="screenShots/checkbox_false2.png" width="250"> |
+
+| True | True |
+|:---:|:---:|
+| <img src="screenShots/checkbox_true1.png" width="250"> | <img src="screenShots/checkbox_true2.png" width="250"> |
+
 
 ## 🛠️ Technologies Used
 
