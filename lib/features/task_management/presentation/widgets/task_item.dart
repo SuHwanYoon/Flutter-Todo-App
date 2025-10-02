@@ -156,11 +156,16 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                       if (value == null) {
                         return;
                       }else {
+                        // isCompleted 상태가 변경되면 FirestoreRepository를 통해 업데이트합니다.
+                        // 현재로그인한 사용자의 id를 가져오고
+                        // ref.read를 사용하여 isCompleted 상태를 업데이트하기 위해서
+                        // FirestoreRepository 인스턴스를 가져오고 
+                        // updateTaskCompletion 메서드를 호출해 
                         final userId = ref.watch(currentUserProvider)?.uid;
                         ref.read(firestoreRepositoryProvider)
                           .updateTaskCompletion(
                             userId: userId!,
-                            taskId: widget.task.id!,
+                            taskId: widget.task.id,
                             isCompleted: value,
                           );
                       }
@@ -173,13 +178,13 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, size: 20),
+                      icon: const Icon(Icons.edit, size: 30),
                       onPressed: () {
                         // TODO: 수정 액션
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, size: 20),
+                      icon: const Icon(Icons.delete, size: 30),
                       onPressed: () {
                         // TODO: 삭제 액션
                       },
