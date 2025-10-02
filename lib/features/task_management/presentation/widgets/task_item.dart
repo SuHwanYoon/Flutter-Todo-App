@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
+import 'package:flutter_todo_app/features/task_management/data/firestore_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
@@ -21,6 +23,11 @@ class TaskItem extends ConsumerStatefulWidget {
   // 이 필드는 생성자에서 초기화되며, 변경할 수 없습니다.
   final Task task;
 
+  // createState 메서드는 이 위젯의 상태를 관리하는 State 객체를 생성합니다.
+  // State 클래스 안에는 get widget => widget;이 정의되어 있어
+  // widget 필드를 통해 TaskItem 위젯에 접근할 수 있습니다.
+  // _TaskItemState 클래스는 TaskItem 위젯의 상태를 관리합니다.
+  // 이 클래스는 ConsumerState를 상속하여 Riverpod의 상태 관리 기능을 사용할 수 있습니다.
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskItemState();
 }
@@ -65,6 +72,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                 // 날짜 및 우선순위 표시
                 Row(
                   children: [
+                    // priority 표시 박스
                     // priority: 최소 너비를 보장하기 위해 SizedBox로 고정 너비 제공
                     SizedBox(
                       width: SizeConfig.getProportionateWidth(90),
@@ -88,6 +96,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                       ),
                     ),
                     SizedBox(width: SizeConfig.getProportionateWidth(10)),
+                    // 날짜 표시영역
                     // date: 남은 공간을 차지하도록 Expanded 사용
                     Expanded(
                       child: Container(
@@ -138,11 +147,25 @@ class _TaskItemState extends ConsumerState<TaskItem> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 // 체크박스 (상태 연동은 추후 구현)
-                Checkbox(
-                  value: false,
-                  onChanged: (val) {
-                    // TODO: 체크 상태 변경 로직 연결
-                  },
+                Transform.scale(
+                  scale: 1.5,
+                  child: Checkbox(
+                    value: widget.task.isCompleted,
+                    onChanged: (bool? value) {
+                      // 체크박스 상태 변경 액션
+                      if (value == null) {
+                        return;
+                      }else {
+                        final userId = ref.watch(currentUserProvider)?.uid;
+                        ref.read(firestoreRepositoryProvider)
+                          .updateTaskCompletion(
+                            userId: userId!,
+                            taskId: widget.task.id!,
+                            isCompleted: value,
+                          );
+                      }
+                    },
+                  ),
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(4)),
                 Row(
