@@ -73,46 +73,54 @@ class FirestoreRepository {
   }
 
   // loadCompletedTasks 메서드는 특정 사용자의 완료된 작업 목록을 실시간으로 스트림 형태로 제공합니다.
-  // userId를 사용하여 특정 사용자의 작업 컬렉션을 조회합니다.
+  // 원래 where('isCompleted', isEqualTo: true) + orderBy('date') 조합은 Firestore 복합 인덱스가 필요합니다.
+  // 아래는 인덱스를 만들지 않고 동작하게 하는 클라이언트 필터 방식입니다(데이터 전송 증가 가능).
   Stream<List<Task>> loadCompletedTasks(String userId) {
-    // where 메서드를 사용하여 isCompleted 필드가 true인 작업만 필터링합니다.
-    // 작업을 날짜(date) 기준으로 descending(내림차순) 정렬합니다.
-    // snapshots 메서드는 컬렉션의 실시간 업데이트를 스트림으로 제공합니다.
-    // 각 문서 데이터를 Task 객체로 변환하여 리스트로 만듭니다.
-    // map 메서드를 사용하여 QuerySnapshot을 List<Task>로 변환합니다.
-    // Task.fromJson 메서드는 JSON 데이터를 Task 객체로 변환하는 데 사용됩니다.
-    // 최종적으로 Stream<List<Task>> 형태로 반환됩니다.
+    // 아래의 인스턴스의 동작에 대한 설명
+    // 1. 특정 사용자의 작업 컬렉션을 날짜(date) 기준으로 내림차순 정렬하여 가져옵니다.
+    // 2. snapshots() 메서드를 호출하여 해당 컬렉션의 실시간 업데이트를 스트림 형태로 받습니다.
+    // 3. map() 메서드를 사용하여 각 스냅샷을 처리합니다.
+    // 4. 각 스냅샷의 문서들을 Task 객체로 변환합니다.
+    // 5. where() 메서드를 사용하여 isCompleted 필드가 true인 작업만 필터링합니다.
+    // 6. 최종적으로 완료된 작업들만 포함하는 List<Task>를 반환합니다.
     return FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('tasks')
-        .where('isCompleted', isEqualTo: true)
+        // 인덱스가 없을 때는 date로만 정렬한 뒤 클라이언트에서 필터링합니다.
         .orderBy('date', descending: true)
         .snapshots()
         .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => Task.fromJson(doc.data())).toList(),
+          (snapshot) => snapshot.docs
+              .map((doc) => Task.fromJson(doc.data()))
+              .where((task) => task.isCompleted == true)
+              .toList(),
         );
   }
 
   // loadIncompleteTasks 메서드는 특정 사용자의 미완료 작업 목록을 실시간으로 스트림 형태로 제공합니다.
-  // userId를 사용하여 특정 사용자의 작업 컬렉션을 조회합니다.
+  // 동일하게 클라이언트 필터 방식으로 구현하여 복합 인덱스 요구를 회피합니다.
+  // 클라이언트 필터 방식이란 서버에서 모든 데이터를 가져온 후
+  // 클라이언트(앱)에서 필요한 데이터만 필터링하는 방식입니다.
   Stream<List<Task>> loadIncompleteTasks(String userId) {
-    // where 메서드를 사용하여 isCompleted 필드가 false인 작업만 필터링합니다.
-    // 작업을 날짜(date) 기준으로 descending(내림차순) 정렬합니다.
-    // snapshots 메서드는 컬렉션의 실시간 업데이트를 스트림으로 제공합니다.
-    // 각 문서 데이터를 Task 객체로 변환하여 리스트로 만듭니다.
-    // map 메서드를 사용하여 QuerySnapshot을 List<Task>로 변환합니다.
+    // 아래의 인스턴스의 동작에 대한 설명
+    // 1. 특정 사용자의 작업 컬렉션을 날짜(date) 기준으로 내림차순 정렬하여 가져옵니다.
+    // 2. snapshots() 메서드를 호출하여 해당 컬렉션의 실시간 업데이트를 스트림 형태로 받습니다.
+    // 3. map() 메서드를 사용하여 각 스냅샷을 처리합니다.
+    // 4. 각 스냅샷의 문서들을 Task 객체로 변환합니다.
+    // 5. where() 메서드를 사용하여 isCompleted 필드가 false인 작업만 필터링합니다.
+    // 6. 최종적으로 미완료된 작업들만 포함하는 List<Task>를 반환합니다.
     return FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('tasks')
-        .where('isCompleted', isEqualTo: false)
         .orderBy('date', descending: true)
         .snapshots()
         .map(
-          (snapshot) =>
-              snapshot.docs.map((doc) => Task.fromJson(doc.data())).toList(),
+          (snapshot) => snapshot.docs
+              .map((doc) => Task.fromJson(doc.data()))
+              .where((task) => task.isCompleted == false)
+              .toList(),
         );
   }
 

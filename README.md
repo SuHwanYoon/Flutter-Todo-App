@@ -84,6 +84,14 @@ The home screen displays a list of all the tasks that have been added.
 |:---:|:---:|:---:|
 | <img src="screenShots/delete_task1.png" width="250"> | <img src="screenShots/delete_task2.png" width="250"> | <img src="screenShots/delete_task3.png" width="250"> |
 
+### Complete and Incomplete Task Screens
+
+When a task is checked, it appears on the 'Complete' screen. If it's unchecked, it moves back to the 'Incomplete' screen.
+
+| ALL Task | InCompleted Task | Complete Task |
+|:---:|:---:|:---:|
+| <img src="screenShots/incom_com_task1.png" width="250"> | <img src="screenShots/incom_com_task2.png" width="250"> | <img src="screenShots/incom_com_task3.png" width="250"> |
+
 
 ## 🛠️ Technologies Used
 
