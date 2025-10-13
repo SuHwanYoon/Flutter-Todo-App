@@ -72,6 +72,18 @@ The home screen displays a list of all the tasks that have been added.
 |:---:|:---:|
 | <img src="screenShots/checkbox_true1.png" width="250"> | <img src="screenShots/checkbox_true2.png" width="250"> |
 
+### Update Task
+
+| Update Task 1 | Update Task 2 | Update Task 3 |
+|:---:|:---:|:---:|
+| <img src="screenShots/update_task1.png" width="250"> | <img src="screenShots/update_task2.png" width="250"> | <img src="screenShots/update_task3.png" width="250"> |
+
+### Delete Task
+
+| Delete Task 1 | Delete Task 2 | Delete Task 3 |
+|:---:|:---:|:---:|
+| <img src="screenShots/delete_task1.png" width="250"> | <img src="screenShots/delete_task2.png" width="250"> | <img src="screenShots/delete_task3.png" width="250"> |
+
 
 ## 🛠️ Technologies Used
 

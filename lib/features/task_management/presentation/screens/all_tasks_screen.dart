@@ -6,7 +6,6 @@ import 'package:flutter_todo_app/features/authentication/data/auth_repository.da
 import 'package:flutter_todo_app/features/task_management/data/firestore_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/widgets/task_item.dart';
-import 'package:flutter_todo_app/utils/app_styles.dart';
 
 class AllTasksScreen extends ConsumerWidget {
   const AllTasksScreen({super.key});

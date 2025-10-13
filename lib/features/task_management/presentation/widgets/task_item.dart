@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
 import 'package:flutter_todo_app/features/task_management/data/firestore_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
+import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:intl/intl.dart';
@@ -33,6 +34,134 @@ class TaskItem extends ConsumerStatefulWidget {
 }
 
 class _TaskItemState extends ConsumerState<TaskItem> {
+  // 삭제액션에 들어갈 함수를 정의
+  // 이함수는 widget.task.id를 사용하여 특정 작업을 삭제합니다.
+  // 삭제 전에 사용자에게 확인을 요청하는 다이얼로그를 표시합니다.
+  void _deleteTask(String taskId) {
+    final userId = ref.watch(currentUserProvider)?.uid;
+    // showDialog를 사용하여 삭제 확인 다이얼로그를 표시합니다.
+    // showDialog의 구성요소는
+    // context, builder, AlertDialog, title, icon, content, actions 등이 있습니다.
+    // context는 현재 위젯 트리에서의 위치를 나타내며,
+    // builder는 다이얼로그의 내용을 정의하는 함수입니다.
+    // AlertDialog는 제목, 아이콘, 내용, 작업 버튼 등을 포함하는 다이얼로그 위젯입니다.
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        icon: const Icon(Icons.warning, color: Colors.red),
+        content: const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            // Navigator는 현재 위젯 트리에서의 위치를 나타내며,
+            // pop 메서드는 현재 화면을 닫고 이전 화면으로 돌아갑니다.
+            onPressed: () => Navigator.of(context).pop(), // 다이얼로그 닫기
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              // 변경: userId가 null이면 다이얼로그를 닫고 반환하도록 처리
+              final uid = userId;
+              if (uid == null) {
+                Navigator.of(context, rootNavigator: true).pop();
+                return;
+              }
+
+              try {
+                await ref
+                    .read(firestoreControllerProvider.notifier)
+                    .deleteTask(userId: uid, taskId: taskId);
+              } catch (e) {
+                // 필요시 에러 처리(예: 스낵바 표시) - 최소한 다이얼로그는 닫음
+              } finally {
+                if (mounted) {
+                  // rootNavigator: true를 사용해 showDialog로 열린 다이얼로그를 확실히 닫음
+                  Navigator.of(context, rootNavigator: true).pop();
+                }
+              }
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 수정액션에 들어갈 함수를 정의
+  void _updateTask() {
+    // TextEditingController를 사용하여 텍스트 필드의 초기값을 설정하고,
+    // 사용자가 입력한 값을 읽어올 수 있습니다.
+    TextEditingController titleController = TextEditingController(
+      text: widget.task.title,
+    );
+    TextEditingController descriptionController = TextEditingController(
+      text: widget.task.description,
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Update Task'),
+        icon: const Icon(Icons.edit, color: Colors.blue),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(labelText: 'Title'),
+            ),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(labelText: 'Description'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(), // 다이얼로그 닫기
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final userId = ref.watch(currentUserProvider)?.uid;
+              // 변경: userId가 null이면 다이얼로그를 닫고 반환
+              if (userId == null) {
+                Navigator.of(context, rootNavigator: true).pop();
+                return;
+              }
+
+              final updatedTask = Task(
+                id: widget.task.id,
+                title: titleController.text,
+                description: descriptionController.text,
+                date: DateTime.now(),
+                priority: widget.task.priority,
+                isCompleted: widget.task.isCompleted,
+              );
+
+              try {
+                await ref
+                    .read(firestoreControllerProvider.notifier)
+                    .updateTask(
+                      userId: userId,
+                      taskId: widget.task.id,
+                      task: updatedTask,
+                    );
+              } catch (e) {
+                // 필요시 에러 처리(예: 스낵바 표시)
+              } finally {
+                if (mounted) {
+                  Navigator.of(context, rootNavigator: true).pop();
+                }
+              }
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
@@ -155,19 +284,20 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                       // 체크박스 상태 변경 액션
                       if (value == null) {
                         return;
-                      }else {
+                      } else {
                         // isCompleted 상태가 변경되면 FirestoreRepository를 통해 업데이트합니다.
                         // 현재로그인한 사용자의 id를 가져오고
                         // ref.read를 사용하여 isCompleted 상태를 업데이트하기 위해서
-                        // FirestoreRepository 인스턴스를 가져오고 
-                        // updateTaskCompletion 메서드를 호출해 
+                        // FirestoreRepository 인스턴스를 가져오고
+                        // updateTaskCompletion 메서드를 호출해
                         final userId = ref.watch(currentUserProvider)?.uid;
-                        ref.read(firestoreRepositoryProvider)
-                          .updateTaskCompletion(
-                            userId: userId!,
-                            taskId: widget.task.id,
-                            isCompleted: value,
-                          );
+                        ref
+                            .read(firestoreRepositoryProvider)
+                            .updateTaskCompletion(
+                              userId: userId!,
+                              taskId: widget.task.id,
+                              isCompleted: value,
+                            );
                       }
                     },
                   ),
@@ -180,13 +310,13 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                     IconButton(
                       icon: const Icon(Icons.edit, size: 30),
                       onPressed: () {
-                        // TODO: 수정 액션
+                        _updateTask();
                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, size: 30),
                       onPressed: () {
-                        // TODO: 삭제 액션
+                        _deleteTask(widget.task.id);
                       },
                     ),
                   ],
