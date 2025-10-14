@@ -6,6 +6,7 @@ import 'package:flutter_todo_app/features/task_management/domain/task.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
+import 'package:flutter_todo_app/utils/priority_colors.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:intl/intl.dart';
 
@@ -209,7 +210,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                         height: SizeConfig.getProportionateHeight(40),
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: Colors.deepOrange,
+                          color: PriorityColors.getColor(widget.task.priority),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: FittedBox(

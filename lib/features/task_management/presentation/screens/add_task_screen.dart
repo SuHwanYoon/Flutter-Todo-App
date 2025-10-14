@@ -8,6 +8,7 @@ import 'package:flutter_todo_app/features/task_management/presentation/screens/m
 import 'package:flutter_todo_app/features/task_management/presentation/widgets/title_description.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
+import 'package:flutter_todo_app/utils/priority_colors.dart';
 
 // AddTaskScreen은 새로운 작업을 추가하는 화면을 담당하는 StatefulWidget입니다.
 // ConsumerStatefulWidget을 상속하여 Riverpod의 상태 관리를 사용합니다.
@@ -35,6 +36,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
     _descriptionController.dispose();
     super.dispose();
   }
+
   // widget을 그리는 build 메서드는 BuildContext를 매개변수로 받습니다.
   // BuildContext의 역할은 위젯 트리에서 현재 위젯의 위치를 나타내며,
   // 부모 위젯에 접근하거나 테마, 미디어 쿼리 등의 정보를 가져오는 데 사용됩니다.
@@ -139,7 +141,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                                 borderRadius: BorderRadius.circular(10),
                                 // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
                                 color: _selectedPriorityIndex == index
-                                    ? Colors.deepOrange
+                                    ? PriorityColors.getColor(priority)
                                     : Colors.grey,
                               ),
                               child: Text(
@@ -191,7 +193,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                   width: SizeConfig.screenWidth,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.blue,
+                    color: Colors.green,
                   ),
                   // 버튼 내부의 내용을 조건에 따라 다르게 표시합니다.
                   // 로딩 중일 때는 CircularProgressIndicator를 표시하고, 아닐 때는 Row를 표시합니다.
