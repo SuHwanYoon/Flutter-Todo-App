@@ -4,6 +4,7 @@ import 'package:flutter_todo_app/features/authentication/data/auth_repository.da
 import 'package:flutter_todo_app/features/task_management/data/firestore_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
+import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:intl/intl.dart';
@@ -74,6 +75,8 @@ class _TaskItemState extends ConsumerState<TaskItem> {
               await ref
                   .read(firestoreControllerProvider.notifier)
                   .deleteTask(userId: userId, taskId: taskId);
+              // MainScreen에서 SnackBar를 표시하도록 요청합니다.
+              mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 삭제되었습니다.');
               // 3. 저장해둔 navigator를 사용하여 다이얼로그 닫기
               navigator.pop();
             },
@@ -146,6 +149,8 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                     taskId: widget.task.id,
                     task: updatedTask,
                   );
+              // MainScreen에서 SnackBar를 표시하도록 요청합니다.
+              mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 수정되었습니다.');
               // 3. 저장해둔 navigator를 사용하여 다이얼로그 닫기
               navigator.pop();
             },

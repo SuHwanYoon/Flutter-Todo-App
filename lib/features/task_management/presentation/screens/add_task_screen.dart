@@ -63,6 +63,11 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
         mainScreenKey.currentState?.changeTab(0);
         // MainScreen에서 SnackBar를 표시하도록 요청합니다.
         mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 작성되었습니다.');
+        // 작업 추가가 완료되었으므로 입력 필드를 초기화합니다.
+        _titleController.clear();
+        _descriptionController.clear();
+        // 우선순위 선택도 기본값(Low)으로 되돌립니다.
+        setState(() => _selectedPriorityIndex = 0);
       }
     });
 
