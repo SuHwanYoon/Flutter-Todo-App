@@ -60,25 +60,22 @@ class _TaskItemState extends ConsumerState<TaskItem> {
           ),
           TextButton(
             onPressed: () async {
-              // 변경: userId가 null이면 다이얼로그를 닫고 반환하도록 처리
+              // 비동기작업이 진행되는 동안 사용자가 다른 화면으로 이동하거나 현재 위젯이 화면에서 사라질수 있음
+              // 그렇게 되면 해당위젯이 가지고 있던 buildContext는 유효하지 않게됨
+              // 그러면 Nvigator.pop이나 showDialog같은 코드 실행시 앱이 비정상 종료되거나 오류발생가능
+              // 1. 비동기작업이 완료되기를 기다리는동안(async gap) 전에 Navigator를 변수에 저장
+              final navigator = Navigator.of(context);
               final uid = userId;
               if (uid == null) {
-                Navigator.of(context, rootNavigator: true).pop();
+                navigator.pop();
                 return;
               }
-
-              try {
-                await ref
-                    .read(firestoreControllerProvider.notifier)
-                    .deleteTask(userId: uid, taskId: taskId);
-              } catch (e) {
-                // 필요시 에러 처리(예: 스낵바 표시) - 최소한 다이얼로그는 닫음
-              } finally {
-                if (mounted) {
-                  // rootNavigator: true를 사용해 showDialog로 열린 다이얼로그를 확실히 닫음
-                  Navigator.of(context, rootNavigator: true).pop();
-                }
-              }
+              // 2. 비동기 작업 수행 (여기서는 삭제)
+              await ref
+                  .read(firestoreControllerProvider.notifier)
+                  .deleteTask(userId: uid, taskId: taskId);
+              // 3. 저장해둔 navigator를 사용하여 다이얼로그 닫기
+              navigator.pop();
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
@@ -123,10 +120,11 @@ class _TaskItemState extends ConsumerState<TaskItem> {
           ),
           TextButton(
             onPressed: () async {
+              // 1. async gap 전에 Navigator를 변수에 저장
+              final navigator = Navigator.of(context);
               final userId = ref.watch(currentUserProvider)?.uid;
-              // 변경: userId가 null이면 다이얼로그를 닫고 반환
               if (userId == null) {
-                Navigator.of(context, rootNavigator: true).pop();
+                navigator.pop();
                 return;
               }
 
@@ -139,23 +137,18 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                 isCompleted: widget.task.isCompleted,
               );
 
-              try {
-                await ref
-                    .read(firestoreControllerProvider.notifier)
-                    .updateTask(
-                      userId: userId,
-                      taskId: widget.task.id,
-                      task: updatedTask,
-                    );
-              } catch (e) {
-                // 필요시 에러 처리(예: 스낵바 표시)
-              } finally {
-                if (mounted) {
-                  Navigator.of(context, rootNavigator: true).pop();
-                }
-              }
+              // 2. 비동기 작업 수행 (여기서는 수정)
+              await ref
+                  .read(firestoreControllerProvider.notifier)
+                  .updateTask(
+                    userId: userId,
+                    taskId: widget.task.id,
+                    task: updatedTask,
+                  );
+              // 3. 저장해둔 navigator를 사용하여 다이얼로그 닫기
+              navigator.pop();
             },
-            child: const Text('Update'),
+            child: const Text('Update', style: TextStyle(color: Colors.blue),),
           ),
         ],
       ),

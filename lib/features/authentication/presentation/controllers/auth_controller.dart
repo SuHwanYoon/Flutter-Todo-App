@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -69,12 +68,19 @@ class AuthController extends AsyncNotifier<void> {
   /// state 상태변수가 바뀜
   Future<void> signOut() async {
     // 상태를 로딩 중으로 설정하여 UI에 로딩 상태를 알립니다.
+    final authRepository = ref.read(authRepositoryProvider);
     state = const AsyncLoading();
-    // authRepositoryProvider를 통해 실제 로그아웃 로직을 호출하고,
-    // 결과를 AsyncValue.guard를 통해 상태에 반영합니다.
-    state = await AsyncValue.guard(
-      () => ref.read(authRepositoryProvider).signOut(),
-    );
-  }
+    state = await AsyncValue.guard(authRepository.signOut);
 
+    /// invalidate는 특정 프로바이더의 상태를 무효화하여 다음에 해당 프로바이더를 읽을 때
+    /// 새로운 상태를 생성하도록 지시합니다.
+    /// 여기서는 로그아웃 성공 시 currentUserProvider와 AuthController 자체의 상태를 무효화하여
+    /// 사용자 정보 및 인증 컨트롤러의 상태를 초기화합니다.
+
+    if (!state.hasError) {
+      // 로그아웃 성공 시 관련된 프로바이더들을 초기화합니다.
+      ref.invalidate(currentUserProvider);
+      ref.invalidateSelf();
+    }
+  }
 }

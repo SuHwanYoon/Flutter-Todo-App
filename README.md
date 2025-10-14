@@ -36,6 +36,15 @@ Here are some screenshots of the user authentication interface:
 | :---: | :---: |
 | <img src="screenShots/home_screen_wiget.png" width="250"> | <img src="screenShots/account_screen_wiget.png" width="250"> |
 
+
+### Account Screen & Sign Out
+
+The account screen displays the user's email and provides a sign-out option. Tapping the 'Sign Out' button shows a confirmation dialog. Upon confirmation, the user is logged out and redirected to the sign-in screen.
+
+| Account Screen | Sign Out Confirmation | Back to Sign In Screen |
+|:---:|:---:|:---:|
+| <img src="screenShots/account_screen1.png" width="250"> | <img src="screenShots/account_screen2.png" width="250"> | <img src="screenShots/account_screen3.png" width="250"> |
+
 ### Add Task Screen
 
 | Add Task 1 | Add Task 2 | Add Task 3 |
