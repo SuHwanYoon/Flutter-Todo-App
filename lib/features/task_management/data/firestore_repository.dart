@@ -143,10 +143,14 @@ class FirestoreRepository {
   // updateTaskCompletion 메서드는 특정 사용자의 특정 작업의 완료 상태를 업데이트합니다.
   // userId와 taskId를 사용하여 특정 사용자의 특정 작업 문서를 찾아 isCompleted 필드를 업데이트합니다.
   Future<void> updateTaskCompletion({
+    required String? userId,
     required String taskId,
-    required String userId,
     required bool isCompleted,
   }) async {
+    if (userId == null) {
+      // userId가 없으면 아무 작업도 하지 않고 종료합니다.
+      return;
+    }
     // update 메서드는 지정된 필드만 업데이트하며, 문서가 존재하지 않으면 오류를 발생시킵니다.
     // isCompleted 필드를 업데이트합니다.
     await _firestore
@@ -190,7 +194,3 @@ Stream<List<Task>> loadIncompleteTasks(Ref ref, String userId) {
   final firestoreRepository = ref.watch(firestoreRepositoryProvider);
   return firestoreRepository.loadIncompleteTasks(userId);
 }
-
-
-
-

@@ -4,6 +4,7 @@ import 'package:flutter_todo_app/common_wigets/async_value_ui.dart';
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
+import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/widgets/title_description.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
@@ -52,8 +53,17 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
 
     // 비동기 상태에 따라 UI를 업데이트합니다.
     // 오류가 발생하면 알림 대화상자를 표시합니다. 
-    ref.listen<AsyncValue>(firestoreControllerProvider, (_, state) {
+    ref.listen<AsyncValue>(firestoreControllerProvider, (previous, state) {
       state.showAlertDialogOnError(context);
+      // 작업 추가가 성공적으로 완료되었는지 확인합니다.
+      // 이전 상태가 로딩 중이었고, 현재 상태에 에러가 없다면 성공으로 간주합니다.
+      final isTaskAdded = previous is AsyncLoading && !state.hasError;
+      if (isTaskAdded) {
+        // GlobalKey를 사용하여 MainScreen의 탭을 AllTasksScreen(인덱스 0)으로 이동시킵니다.
+        mainScreenKey.currentState?.changeTab(0);
+        // MainScreen에서 SnackBar를 표시하도록 요청합니다.
+        mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 작성되었습니다.');
+      }
     });
 
     return SafeArea(

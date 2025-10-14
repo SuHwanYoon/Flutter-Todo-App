@@ -38,7 +38,9 @@ class _TaskItemState extends ConsumerState<TaskItem> {
   // 이함수는 widget.task.id를 사용하여 특정 작업을 삭제합니다.
   // 삭제 전에 사용자에게 확인을 요청하는 다이얼로그를 표시합니다.
   void _deleteTask(String taskId) {
-    final userId = ref.watch(currentUserProvider)?.uid;
+    // 다이얼로그를 띄우기 전에 필요한 값을 ref.read로 미리 읽어옵니다.
+    // ref.watch를 사용하면 위젯이 재빌드되어 context가 무효화될 수 있습니다.
+    final userId = ref.read(currentUserProvider)?.uid;
     // showDialog를 사용하여 삭제 확인 다이얼로그를 표시합니다.
     // showDialog의 구성요소는
     // context, builder, AlertDialog, title, icon, content, actions 등이 있습니다.
@@ -62,18 +64,16 @@ class _TaskItemState extends ConsumerState<TaskItem> {
             onPressed: () async {
               // 비동기작업이 진행되는 동안 사용자가 다른 화면으로 이동하거나 현재 위젯이 화면에서 사라질수 있음
               // 그렇게 되면 해당위젯이 가지고 있던 buildContext는 유효하지 않게됨
-              // 그러면 Nvigator.pop이나 showDialog같은 코드 실행시 앱이 비정상 종료되거나 오류발생가능
-              // 1. 비동기작업이 완료되기를 기다리는동안(async gap) 전에 Navigator를 변수에 저장
+              // 1. async gap 전에 필요한 값들을 미리 변수에 저장합니다.
               final navigator = Navigator.of(context);
-              final uid = userId;
-              if (uid == null) {
+              if (userId == null) {
                 navigator.pop();
                 return;
               }
               // 2. 비동기 작업 수행 (여기서는 삭제)
               await ref
                   .read(firestoreControllerProvider.notifier)
-                  .deleteTask(userId: uid, taskId: taskId);
+                  .deleteTask(userId: userId, taskId: taskId);
               // 3. 저장해둔 navigator를 사용하여 다이얼로그 닫기
               navigator.pop();
             },
@@ -121,8 +121,9 @@ class _TaskItemState extends ConsumerState<TaskItem> {
           TextButton(
             onPressed: () async {
               // 1. async gap 전에 Navigator를 변수에 저장
+              // ref.watch 대신 ref.read를 사용하여 context 문제를 방지합니다.
               final navigator = Navigator.of(context);
-              final userId = ref.watch(currentUserProvider)?.uid;
+              final userId = ref.read(currentUserProvider)?.uid;
               if (userId == null) {
                 navigator.pop();
                 return;
@@ -281,13 +282,13 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                         // isCompleted 상태가 변경되면 FirestoreRepository를 통해 업데이트합니다.
                         // 현재로그인한 사용자의 id를 가져오고
                         // ref.read를 사용하여 isCompleted 상태를 업데이트하기 위해서
-                        // FirestoreRepository 인스턴스를 가져오고
+                        // firestoreRepositoryProvider 인스턴스를 가져오고
                         // updateTaskCompletion 메서드를 호출해
-                        final userId = ref.watch(currentUserProvider)?.uid;
+                        final userId = ref.read(currentUserProvider)?.uid;
                         ref
                             .read(firestoreRepositoryProvider)
                             .updateTaskCompletion(
-                              userId: userId!,
+                              userId: userId,
                               taskId: widget.task.id,
                               isCompleted: value,
                             );

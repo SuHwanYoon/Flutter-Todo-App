@@ -6,12 +6,16 @@ import 'package:flutter_todo_app/features/task_management/presentation/screens/a
 import 'package:flutter_todo_app/features/task_management/presentation/screens/completed_tasks_screen.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/screens/incomplete_tasks_screen.dart';
 
+// MainScreen의 State에 접근하기 위한 GlobalKey입니다.
+// 이를 통해 다른 위젯에서 MainScreen의 상태를 제어할 수 있습니다.
+final mainScreenKey = GlobalKey<_MainScreenState>();
+
 // ConsumerStatefulWidget은 상태 관리를 위해 Riverpod의 Consumer를 사용할 수 있는 StatefulWidget입니다.
 // consumer는 Riverpod의 Provider를 구독(watch)할 수 있게 해줍니다.
 // 예를 들어, 할 일 목록을 추가하거나 삭제하면 화면이 업데이트되어야 합니다.
 class MainScreen extends StatefulWidget {
   // 생성자. super.key는 StatefulWidget에 key를 전달하는 역할을 합니다.
-  const MainScreen({super.key});
+  const MainScreen({super.key}); // key는 여기서 전달받습니다.
 
   // override는 부모 클래스(여기서는 StatefulWidget)에 정의된 메소드를 자식 클래스에서 재정의(override)한다는 의미입니다.
   // createState()는 StatefulWidget의 필수 메서드로, 이 위젯의 가변 상태를 생성합니다.
@@ -31,6 +35,19 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   late TabController _tabController;
   // 현재 선택된 탭의 인덱스를 저장하는 변수입니다.
   int currentIndex = 0;
+
+  // 외부에서 탭을 변경할 수 있도록 하는 public 메서드입니다.
+  void changeTab(int index) => _tabController.animateTo(index);
+
+  // 외부에서 SnackBar를 표시할 수 있도록 하는 public 메서드입니다.
+  void showSnackBar(String message) {
+    // 혹시 이전에 표시된 SnackBar가 있다면 지웁니다.
+    ScaffoldMessenger.of(context).clearSnackBars();
+    // 새로운 SnackBar를 표시합니다.
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
   // initState() 메소드는 State 객체가 처음 생성될 때 호출됩니다.
   // 여기서는 TabController를 초기화하는 데 사용됩니다.
