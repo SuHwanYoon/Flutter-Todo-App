@@ -20,25 +20,26 @@ class IncompleteTasksScreen extends ConsumerWidget {
     // 이 값을 사용하여 UI를 적절하게 렌더링할 수 있습니다.
     // loadIncompleteTasksProvider가 userId String을 매개변수로 받기 때문에
     // userId가 null이 아닐 때만 호출되도록 합니다.
-    final incompleteTasksAsyncValue = ref.watch(
-      loadIncompleteTasksProvider(userId!),
-    );
+    final incompleteTasksAsyncValue = userId == null
+        ? const AsyncData<List<Task>>([])
+        : ref.watch(loadIncompleteTasksProvider(userId));
 
-    ref.listen<AsyncValue>(loadIncompleteTasksProvider(userId), (_, state) {
-      state.whenOrNull(
-        error: (error, stackTrace) {
-          // 에러가 발생했을 때 콘솔에 에러 메시지를 출력합니다.
-          // ignore: avoid_print
-          debugPrint('loadIncompleteTasks error: $error');
-          debugPrint('$stackTrace');
-          // 만들어둔 asyncValueUi 확장의 showAlertDialogOnError 메서드를 호출하여
-          // 에러가 발생했을 때 다이얼로그를 표시합니다.
-          state.showAlertDialogOnError(context);
-        },
-      );
-      // state.showAlertDialogOnError(context);
-    });
-
+    if (userId != null) {
+      ref.listen<AsyncValue>(loadIncompleteTasksProvider(userId), (_, state) {
+        state.whenOrNull(
+          error: (error, stackTrace) {
+            // 에러가 발생했을 때 콘솔에 에러 메시지를 출력합니다.
+            // ignore: avoid_print
+            debugPrint('loadIncompleteTasks error: $error');
+            debugPrint('$stackTrace');
+            // 만들어둔 asyncValueUi 확장의 showAlertDialogOnError 메서드를 호출하여
+            // 에러가 발생했을 때 다이얼로그를 표시합니다.
+            state.showAlertDialogOnError(context);
+          },
+        );
+        // state.showAlertDialogOnError(context);
+      });
+    }
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(title: Text('Incomplete Tasks')),

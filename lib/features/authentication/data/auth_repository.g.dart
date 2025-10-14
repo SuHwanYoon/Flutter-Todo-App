@@ -49,7 +49,7 @@ final authStateChangeProvider = StreamProvider<User?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthStateChangeRef = StreamProviderRef<User?>;
-String _$currentUserHash() => r'b367f58b96bb951a08bf3875efc474d0fcada754';
+String _$currentUserHash() => r'f5ad9f4618788565910c35a3305bab0d62b13c99';
 
 /// [currentUserProvider]는 현재 로그인된 사용자를 제공하는 Riverpod 프로바이더입니다.
 ///
