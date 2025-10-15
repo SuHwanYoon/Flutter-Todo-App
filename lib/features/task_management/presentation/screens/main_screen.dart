@@ -40,12 +40,15 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   void changeTab(int index) => _tabController.animateTo(index);
 
   // 외부에서 SnackBar를 표시할 수 있도록 하는 public 메서드입니다.
-  void showSnackBar(String message) {
+  void showSnackBar(String message, {Color backgroundColor = Colors.green}) {
     // 혹시 이전에 표시된 SnackBar가 있다면 지웁니다.
     ScaffoldMessenger.of(context).clearSnackBars();
     // 새로운 SnackBar를 표시합니다.
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: backgroundColor,
+      ),
     );
   }
 

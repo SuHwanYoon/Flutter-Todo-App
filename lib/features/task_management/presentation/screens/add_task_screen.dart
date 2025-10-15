@@ -64,7 +64,10 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
         // GlobalKey를 사용하여 MainScreen의 탭을 AllTasksScreen(인덱스 0)으로 이동시킵니다.
         mainScreenKey.currentState?.changeTab(0);
         // MainScreen에서 SnackBar를 표시하도록 요청합니다.
-        mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 작성되었습니다.');
+        mainScreenKey.currentState?.showSnackBar(
+          'Task가 성공적으로 작성되었습니다.',
+          backgroundColor: Colors.green,
+        );
         // 작업 추가가 완료되었으므로 입력 필드를 초기화합니다.
         _titleController.clear();
         _descriptionController.clear();
