@@ -90,7 +90,7 @@ GoRouter goRouter(Ref ref) {
         // 경로 이름 상단에 선언된 (AppRoutes enum 사용)
         name: AppRoutes.main.name,
         // 이 경로로 이동했을 때 보여줄 위젯(화면)
-        builder: (context, state) => const MainScreen(),
+        builder: (context, state) => MainScreen(key: mainScreenKey),
       ),
       GoRoute(
         path: '/signIn',

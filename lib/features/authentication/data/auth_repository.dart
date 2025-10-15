@@ -81,7 +81,8 @@ User? currentUser(Ref ref) {
   // final authRepository = ref.watch(authRepositoryProvider);
   // return authRepository.currentUser;
 
-  // authStateChangeProvider는 인증상태변경스트림(Stream<User?>)을 구독해서 자신의 상태를 자동으로 업데이트하도록 만듬
+  // authStateChangeProvider는 인증상태변경스트림(Stream<User?>)을 구독해서
+  // 자신의 상태를 자동으로 업데이트하도록 만듬
   // authStateChangeProvider를 watch하여 인증 상태 변경을 감지하고,
   // 스트림이 새로운 User 객체를 전달하면 그 값을 반환합니다.
   return ref.watch(authStateChangeProvider).value;

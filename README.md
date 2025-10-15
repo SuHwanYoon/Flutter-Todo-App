@@ -102,6 +102,15 @@ When a task is checked, it appears on the 'Complete' screen. If it's unchecked, 
 | <img src="screenShots/incom_com_task1.png" width="250"> | <img src="screenShots/incom_com_task2.png" width="250"> | <img src="screenShots/incom_com_task3.png" width="250"> |
 
 
+### Priority Selection
+
+For a better user experience, when adding a task, you can set a priority (Low, Medium, High). Each priority is represented by a different color. This color-coding is also reflected on the main task list, making it easy to identify task priorities at a glance.
+
+| Priority Low | Priority Medium | Priority High | All Tasks Screen |
+|:---:|:---:|:---:|:---:|
+| <img src="screenShots/priority_selection1.png" width="250"> | <img src="screenShots/priority_selection2.png" width="250"> | <img src="screenShots/priority_selection3.png" width="250"> | <img src="screenShots/priority_selection4.png" width="250"> |
+
+
 ## 🛠️ Technologies Used
 
 - **Frontend**: [Flutter](https://flutter.dev/)

@@ -4,9 +4,11 @@ import 'package:flutter_todo_app/common_wigets/async_value_ui.dart';
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
+import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/widgets/title_description.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
+import 'package:flutter_todo_app/utils/priority_colors.dart';
 
 // AddTaskScreen은 새로운 작업을 추가하는 화면을 담당하는 StatefulWidget입니다.
 // ConsumerStatefulWidget을 상속하여 Riverpod의 상태 관리를 사용합니다.
@@ -34,6 +36,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
     _descriptionController.dispose();
     super.dispose();
   }
+
   // widget을 그리는 build 메서드는 BuildContext를 매개변수로 받습니다.
   // BuildContext의 역할은 위젯 트리에서 현재 위젯의 위치를 나타내며,
   // 부모 위젯에 접근하거나 테마, 미디어 쿼리 등의 정보를 가져오는 데 사용됩니다.
@@ -52,8 +55,22 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
 
     // 비동기 상태에 따라 UI를 업데이트합니다.
     // 오류가 발생하면 알림 대화상자를 표시합니다. 
-    ref.listen<AsyncValue>(firestoreControllerProvider, (_, state) {
+    ref.listen<AsyncValue>(firestoreControllerProvider, (previous, state) {
       state.showAlertDialogOnError(context);
+      // 작업 추가가 성공적으로 완료되었는지 확인합니다.
+      // 이전 상태가 로딩 중이었고, 현재 상태에 에러가 없다면 성공으로 간주합니다.
+      final isTaskAdded = previous is AsyncLoading && !state.hasError;
+      if (isTaskAdded) {
+        // GlobalKey를 사용하여 MainScreen의 탭을 AllTasksScreen(인덱스 0)으로 이동시킵니다.
+        mainScreenKey.currentState?.changeTab(0);
+        // MainScreen에서 SnackBar를 표시하도록 요청합니다.
+        mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 작성되었습니다.');
+        // 작업 추가가 완료되었으므로 입력 필드를 초기화합니다.
+        _titleController.clear();
+        _descriptionController.clear();
+        // 우선순위 선택도 기본값(Low)으로 되돌립니다.
+        setState(() => _selectedPriorityIndex = 0);
+      }
     });
 
     return SafeArea(
@@ -124,7 +141,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                                 borderRadius: BorderRadius.circular(10),
                                 // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
                                 color: _selectedPriorityIndex == index
-                                    ? Colors.deepOrange
+                                    ? PriorityColors.getColor(priority)
                                     : Colors.grey,
                               ),
                               child: Text(
@@ -176,7 +193,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                   width: SizeConfig.screenWidth,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.blue,
+                    color: Colors.green,
                   ),
                   // 버튼 내부의 내용을 조건에 따라 다르게 표시합니다.
                   // 로딩 중일 때는 CircularProgressIndicator를 표시하고, 아닐 때는 Row를 표시합니다.

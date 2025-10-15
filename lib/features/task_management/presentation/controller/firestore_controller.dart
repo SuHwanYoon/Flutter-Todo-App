@@ -13,8 +13,7 @@ part 'firestore_controller.g.dart';
 class FirestoreController extends _$FirestoreController {
   @override
   FutureOr<void> build() {
-    // 초기화 작업이 필요하면 여기에 작성합니다.
-    throw UnimplementedError();
+    // 이 컨트롤러는 액션만 트리거하므로, build 메서드에서 특별한 작업을 할 필요가 없습니다.
   }
 
   // addTask 메서드는 새로운 작업을 Firestore에 추가합니다.
@@ -22,6 +21,7 @@ class FirestoreController extends _$FirestoreController {
   // task 객체는 추가할 작업의 데이터를 포함합니다.
   Future<void> addTask({required String userId, required Task task}) async {
     // 상태를 로딩 상태로 설정합니다.
+    // addTask는 화면 전환 및 스낵바 표시를 위해 상태 변경이 필요하므로 그대로 둡니다.
     state = const AsyncLoading();
     // FirestoreRepository 인스턴스를 가져옵니다.
     final firestoreRepository = ref.read(firestoreRepositoryProvider);
@@ -44,15 +44,20 @@ class FirestoreController extends _$FirestoreController {
     required String taskId,
     required Task task,
   }) async {
-    state = const AsyncLoading();
+    // state를 직접 변경하지 않습니다. UI 업데이트는 StreamProvider가 담당합니다.
     final firestoreRepository = ref.read(firestoreRepositoryProvider);
-    state = await AsyncValue.guard(
+    // 오류 처리를 위해 AsyncValue.guard를 사용하되, 그 결과를 state에 할당하지 않습니다.
+    // 이렇게 하면 작업 중 오류가 발생해도 AsyncValueUI 확장을 통해 사용자에게 알려줄 수 있습니다.
+    await AsyncValue.guard(
       () => firestoreRepository.updateTask(
         userId: userId,
         taskId: taskId,
         task: task,
       ),
     );
+    // 작업이 성공적으로 완료되면 컨트롤러의 상태를 null(초기 상태)로 되돌립니다.
+    // 이렇게 하면 오류가 발생한 후 다시 시도할 때 UI가 올바르게 반응합니다.
+    state = const AsyncData(null);
   }
 
   // deleteTask 메서드는 Firestore에서 특정 작업을 삭제합니다.
@@ -61,10 +66,12 @@ class FirestoreController extends _$FirestoreController {
     required String userId,
     required String taskId,
   }) async {
-    state = const AsyncLoading();
+    // state를 직접 변경하지 않습니다. UI 업데이트는 StreamProvider가 담당합니다.
     final firestoreRepository = ref.read(firestoreRepositoryProvider);
-    state = await AsyncValue.guard(
+    await AsyncValue.guard(
       () => firestoreRepository.deleteTask(userId: userId, taskId: taskId),
     );
+    // 작업이 성공적으로 완료되면 컨트롤러의 상태를 null(초기 상태)로 되돌립니다.
+    state = const AsyncData(null);
   }
 }
