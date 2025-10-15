@@ -77,7 +77,10 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   .read(firestoreControllerProvider.notifier)
                   .deleteTask(userId: userId, taskId: taskId);
               // MainScreen에서 SnackBar를 표시하도록 요청합니다.
-              mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 삭제되었습니다.');
+              mainScreenKey.currentState?.showSnackBar(
+                'Task가 성공적으로 삭제되었습니다.',
+                backgroundColor: Colors.red,
+              );
               // 3. 저장해둔 navigator를 사용하여 다이얼로그 닫기
               navigator.pop();
             },
@@ -151,7 +154,10 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                     task: updatedTask,
                   );
               // MainScreen에서 SnackBar를 표시하도록 요청합니다.
-              mainScreenKey.currentState?.showSnackBar('Task가 성공적으로 수정되었습니다.');
+              mainScreenKey.currentState?.showSnackBar(
+                'Task가 성공적으로 수정되었습니다.',
+                backgroundColor: Colors.blue,
+              );
               // 3. 저장해둔 navigator를 사용하여 다이얼로그 닫기
               navigator.pop();
             },
