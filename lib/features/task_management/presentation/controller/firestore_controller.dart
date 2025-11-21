@@ -19,7 +19,8 @@ class FirestoreController extends _$FirestoreController {
   // addTask 메서드는 새로운 작업을 Firestore에 추가합니다.
   // userId를 사용하여 특정 사용자의 작업 컬렉션에 작업을 저장합니다.
   // task 객체는 추가할 작업의 데이터를 포함합니다.
-  Future<void> addTask({required String userId, required Task task}) async {
+  // 반환값: 생성된 taskId (실패 시 null)
+  Future<String?> addTask({required String userId, required Task task}) async {
     // 상태를 로딩 상태로 설정합니다.
     // addTask는 화면 전환 및 스낵바 표시를 위해 상태 변경이 필요하므로 그대로 둡니다.
     state = const AsyncLoading();
@@ -31,9 +32,14 @@ class FirestoreController extends _$FirestoreController {
     // 3. 작업이 실패하면 상태를 AsyncError로 업데이트합니다.
     // guard 메서드를 사용하여 비동기 작업을 수행하고,
     // 작업이 완료되면 상태를 업데이트합니다.
-    state = await AsyncValue.guard(
+    final result = await AsyncValue.guard(
       () => firestoreRepository.addTask(userId: userId, task: task),
     );
+
+    state = result.hasValue ? const AsyncData(null) : result;
+
+    // 성공 시 taskId 반환, 실패 시 null 반환
+    return result.value;
   }
 
   // updateTask 메서드는 기존 작업을 Firestore에서 업데이트합니다.

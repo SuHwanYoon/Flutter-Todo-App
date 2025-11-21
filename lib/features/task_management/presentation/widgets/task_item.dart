@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
 import 'package:flutter_todo_app/features/task_management/data/firestore_repository.dart';
+import 'package:flutter_todo_app/features/task_management/data/notification_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
+import 'package:flutter_todo_app/features/task_management/domain/task_notification.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
@@ -14,6 +16,12 @@ import 'package:intl/intl.dart';
 // 포맷팅을 할 함수를 정의 합니다.
 String formatDate(DateTime date) {
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  return formatter.format(date);
+}
+
+// 알림 날짜/시간 포맷팅 함수
+String formatNotificationDateTime(DateTime date) {
+  final DateFormat formatter = DateFormat('MM-dd HH:mm');
   return formatter.format(date);
 }
 
@@ -168,9 +176,59 @@ class _TaskItemState extends ConsumerState<TaskItem> {
     );
   }
 
+  // 알림 옵션 다이얼로그 표시
+  void _showNotificationOptionsDialog(TaskNotification notification) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Notification'),
+        icon: const Icon(Icons.notifications, color: Colors.orange),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit, color: Colors.blue),
+              title: const Text('Edit Time'),
+              subtitle: Text(
+                formatNotificationDateTime(notification.notificationTime),
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+              onTap: () {
+                // TODO: 시간 수정 기능 (나중에 구현)
+                Navigator.of(context).pop();
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Remove Notification'),
+              onTap: () {
+                // TODO: 알림 삭제 기능 (나중에 구현)
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+
+    // Get userId and notification for this task
+    final userId = ref.watch(currentUserProvider)?.uid ?? '';
+    final notificationAsync = ref.watch(taskNotificationProvider(
+      userId: userId,
+      taskId: widget.task.id,
+    ));
 
     return Container(
       margin: const EdgeInsets.all(10),
@@ -204,11 +262,10 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(10)),
-                // 날짜 및 우선순위 표시
+                // 우선순위 및 알림 표시
                 Row(
                   children: [
                     // priority 표시 박스
-                    // priority: 최소 너비를 보장하기 위해 SizedBox로 고정 너비 제공
                     SizedBox(
                       width: SizeConfig.getProportionateWidth(90),
                       child: Container(
@@ -231,43 +288,73 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                       ),
                     ),
                     SizedBox(width: SizeConfig.getProportionateWidth(10)),
-                    // 날짜 표시영역
-                    // date: 남은 공간을 차지하도록 Expanded 사용
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
-                        height: SizeConfig.getProportionateHeight(40),
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        // 날짜와 아이콘을 Row로 배치
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center, // 가운데 정렬을 위해 추가
-                          children: [
-                            const Icon(
-                              Icons.calendar_today,
-                              size: 16,
-                              color: Colors.white,
-                            ),
-                            SizedBox(
-                              width: SizeConfig.getProportionateWidth(5),
-                            ),
-                            Flexible(
-                              // Text 위젯도 Flexible로 감싸기
-                              child: Text(
-                                formatDate(widget.task.date),
-                                style: Appstyles.normalTextStyle.copyWith(
-                                  color: Colors.white,
-                                ),
-                                overflow: TextOverflow
-                                    .ellipsis, // 텍스트가 넘칠 경우 ...으로 표시
+                    // 알림 시간 표시 (알림이 있는 경우에만)
+                    notificationAsync.when(
+                      data: (notification) {
+                        if (notification == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              _showNotificationOptionsDialog(notification);
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: SizeConfig.getProportionateHeight(40),
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.orange,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.notifications_active,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(
+                                    width: SizeConfig.getProportionateWidth(5),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      formatNotificationDateTime(
+                                          notification.notificationTime),
+                                      style: Appstyles.normalTextStyle.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        );
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, __) => const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+                SizedBox(height: SizeConfig.getProportionateHeight(8)),
+                // 작성 날짜 표시
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 14,
+                      color: Colors.grey[600],
+                    ),
+                    SizedBox(width: SizeConfig.getProportionateWidth(5)),
+                    Text(
+                      'Created: ${formatDate(widget.task.date)}',
+                      style: Appstyles.normalTextStyle.copyWith(
+                        fontSize: 12,
+                        color: Colors.grey[600],
                       ),
                     ),
                   ],
