@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/firebase_options.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_todo_app/utils/notification_helper.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -32,6 +33,10 @@ void main() async {
 
   // 로컬 알림 초기화
   await _initializeNotifications();
+
+  // Android 13+ 알림 권한 요청
+  // (Android 12 이하는 자동 허용, iOS는 초기화 시 자동 요청됨)
+  await NotificationHelper.requestNotificationPermission();
 
   // 시스템 UI 오버레이 스타일을 설정하여 상단 상태 표시줄의 색상을 지정합니다.
   // 이 코드는 iOS와 Android 모두에서 일관된 상태 표시줄 스타일을 보장합니다.
