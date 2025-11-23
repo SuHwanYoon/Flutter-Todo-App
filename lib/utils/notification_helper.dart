@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_todo_app/main.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 /// 알림 권한 요청 및 관리 헬퍼 클래스
 class NotificationHelper {
@@ -84,6 +85,55 @@ class NotificationHelper {
       title,
       body,
       notificationDetails,
+      payload: payload,
+    );
+  }
+
+  /// 예약된 알림 스케줄링
+  ///
+  /// [id]: 알림 ID (같은 ID를 사용하면 기존 알림이 업데이트됨)
+  /// [title]: 알림 제목 (Task title)
+  /// [scheduledTime]: 알림이 발송될 시간
+  /// [payload]: 알림 탭 시 전달될 데이터 (선택사항)
+  static Future<void> scheduleNotification({
+    required int id,
+    required String title,
+    required DateTime scheduledTime,
+    String? payload,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'high_importance_channel',
+      'High Importance Notifications',
+      channelDescription: '중요한 알림을 위한 채널',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iOSDetails,
+    );
+
+    // DateTime을 TZDateTime으로 변환
+    final tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(
+      scheduledTime,
+      tz.local,
+    );
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id,
+      title,
+      "Don't forget!",  // 고정 메시지
+      tzScheduledTime,
+      notificationDetails,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: payload,
     );
   }

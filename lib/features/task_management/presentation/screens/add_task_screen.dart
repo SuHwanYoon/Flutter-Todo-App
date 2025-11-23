@@ -11,6 +11,7 @@ import 'package:flutter_todo_app/features/task_management/presentation/widgets/t
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:flutter_todo_app/utils/priority_colors.dart';
+import 'package:flutter_todo_app/utils/notification_helper.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as picker;
 
 // AddTaskScreen은 새로운 작업을 추가하는 화면을 담당하는 StatefulWidget입니다.
@@ -288,9 +289,18 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                       notificationTime: notificationTime,
                     );
 
+                    // Firestore에 알림 정보 저장
                     await ref.read(notificationRepositoryProvider).addNotification(
                       userId: userId,
                       notification: notification,
+                    );
+
+                    // 실제 로컬 알림 스케줄링
+                    await NotificationHelper.scheduleNotification(
+                      id: taskId.hashCode,  // taskId를 기반으로 고유 ID 생성
+                      title: title,          // Task 제목
+                      scheduledTime: notificationTime,
+                      payload: taskId,       // 알림 탭 시 taskId 전달
                     );
                   }
                 },
