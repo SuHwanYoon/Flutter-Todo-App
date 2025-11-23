@@ -95,7 +95,12 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
         _titleController.clear();
         _descriptionController.clear();
         // 우선순위 선택도 기본값(Low)으로 되돌립니다.
-        setState(() => _selectedPriorityIndex = 0);
+        // 알림 설정도 초기화합니다.
+        setState(() {
+          _selectedPriorityIndex = 0;
+          _notificationEnabled = false;
+          _selectedNotificationTime = null;
+        });
       }
     });
 
@@ -261,6 +266,11 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                     priority: priority,
                     date: date,
                   );
+                  // ref.listen에서 상태 초기화가 먼저 일어날 수 있으므로
+                  // notification 값을 미리 저장해둡니다.
+                  final shouldSaveNotification = _notificationEnabled;
+                  final notificationTime = _selectedNotificationTime;
+
                   // 사용자가 add task버튼을 누르면
                   // FirestoreController를 통해 새로운 작업을 추가합니다.
                   // userId와 myTask 객체를 전달하여 특정 사용자에게 작업을 연결합니다.
@@ -270,12 +280,12 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                       );
 
                   // If notification is enabled and taskId was created successfully
-                  if (_notificationEnabled &&
-                      _selectedNotificationTime != null &&
+                  if (shouldSaveNotification &&
+                      notificationTime != null &&
                       taskId != null) {
                     final notification = TaskNotification(
                       taskId: taskId,
-                      notificationTime: _selectedNotificationTime!,
+                      notificationTime: notificationTime,
                     );
 
                     await ref.read(notificationRepositoryProvider).addNotification(

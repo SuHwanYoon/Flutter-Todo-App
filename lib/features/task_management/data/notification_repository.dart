@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task_notification.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -104,14 +105,14 @@ class NotificationRepository {
 }
 
 @Riverpod(keepAlive: true)
-NotificationRepository notificationRepository(NotificationRepositoryRef ref) {
+NotificationRepository notificationRepository(Ref ref) {
   return NotificationRepository(FirebaseFirestore.instance);
 }
 
 // StreamProvider to watch notification for a specific task
 @riverpod
 Stream<TaskNotification?> taskNotification(
-  TaskNotificationRef ref, {
+  Ref ref, {
   required String userId,
   required String taskId,
 }) {

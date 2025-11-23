@@ -7,7 +7,7 @@ part of 'notification_repository.dart';
 // **************************************************************************
 
 String _$notificationRepositoryHash() =>
-    r'ef7f36e7094dfb0507f157c91660d7c773a80b0e';
+    r'dd0d28357d2182e3c0da9d2c7d3eee6117b929b6';
 
 /// See also [notificationRepository].
 @ProviderFor(notificationRepository)
@@ -25,7 +25,7 @@ final notificationRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef NotificationRepositoryRef = ProviderRef<NotificationRepository>;
-String _$taskNotificationHash() => r'13422d264a27b2cdf0aebe3a62fb13c601b97e89';
+String _$taskNotificationHash() => r'f2ce225fcb982707a3978a565fdd6849bfbef287';
 
 /// Copied from Dart SDK
 class _SystemHash {
