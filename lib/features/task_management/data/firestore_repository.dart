@@ -18,12 +18,12 @@ class FirestoreRepository {
   final FirebaseFirestore _firestore;
 
   // Future는 비동기 작업의 결과를 나타내는 객체입니다.
-  // 이 메서드는 비동기적으로 작업을 추가하고, 완료되면 void를 반환합니다.
+  // 이 메서드는 비동기적으로 작업을 추가하고, 완료되면 taskId를 반환합니다.
   // addTask 메서드는 새로운 작업을 Firestore에 추가합니다.
   // userId를 사용하여 특정 사용자의 작업 컬렉션에 작업을 저장합니다.
   // 작업이 추가된 후, Firestore에서 자동으로 생성된 문서 ID를
-  // 작업 객체의 id 필드에 업데이트합니다.
-  Future<void> addTask({required Task task, required String userId}) async {
+  // 작업 객체의 id 필드에 업데이트하고 해당 ID를 반환합니다.
+  Future<String> addTask({required Task task, required String userId}) async {
     final docRef = await _firestore
         .collection('users')
         .doc(userId)
@@ -31,6 +31,7 @@ class FirestoreRepository {
         .add(task.toJson());
 
     await docRef.update({'id': docRef.id});
+    return docRef.id;
   }
 
   // updateTask 메서드는 기존 작업을 Firestore에서 업데이트합니다.

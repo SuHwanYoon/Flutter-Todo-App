@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
 import 'package:flutter_todo_app/features/authentication/presentation/controllers/auth_controller.dart';
+import 'package:flutter_todo_app/features/authentication/presentation/screens/settings_screen.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 
@@ -14,7 +15,22 @@ class AccountsScreen extends ConsumerWidget {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text('My Account')),
+        appBar: AppBar(
+          title: const Text('My Account'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

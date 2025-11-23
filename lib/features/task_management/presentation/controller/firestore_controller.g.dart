@@ -7,7 +7,7 @@ part of 'firestore_controller.dart';
 // **************************************************************************
 
 String _$firestoreControllerHash() =>
-    r'c123574c19d854eedd27be79d8c8184146129320';
+    r'3f9e261c3292f39f93bf87e42a62589763fac093';
 
 /// See also [FirestoreController].
 @ProviderFor(FirestoreController)

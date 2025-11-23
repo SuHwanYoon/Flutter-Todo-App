@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/common_wigets/async_value_ui.dart';
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
+import 'package:flutter_todo_app/features/task_management/domain/task_notification.dart';
+import 'package:flutter_todo_app/features/task_management/data/notification_repository.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/widgets/title_description.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:flutter_todo_app/utils/priority_colors.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as picker;
 
 // AddTaskScreen은 새로운 작업을 추가하는 화면을 담당하는 StatefulWidget입니다.
 // ConsumerStatefulWidget을 상속하여 Riverpod의 상태 관리를 사용합니다.
@@ -29,12 +32,32 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
   // 현재 선택된 우선순위의 인덱스를 저장하는 변수입니다.
   int _selectedPriorityIndex = 0;
 
+  // Notification settings
+  bool _notificationEnabled = false;
+  DateTime? _selectedNotificationTime;
+
   @override
   void dispose() {
     // 위젯이 dispose될 때 컨트롤러를 정리하여 메모리 누수를 방지합니다.
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectNotificationDateTime() async {
+    picker.DatePicker.showDateTimePicker(
+      context,
+      showTitleActions: true,
+      minTime: DateTime.now(),
+      maxTime: DateTime.now().add(const Duration(days: 365)),
+      onConfirm: (date) {
+        setState(() {
+          _selectedNotificationTime = date;
+        });
+      },
+      currentTime: _selectedNotificationTime ?? DateTime.now(),
+      locale: picker.LocaleType.ko,
+    );
   }
 
   // widget을 그리는 build 메서드는 BuildContext를 매개변수로 받습니다.
@@ -72,7 +95,12 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
         _titleController.clear();
         _descriptionController.clear();
         // 우선순위 선택도 기본값(Low)으로 되돌립니다.
-        setState(() => _selectedPriorityIndex = 0);
+        // 알림 설정도 초기화합니다.
+        setState(() {
+          _selectedPriorityIndex = 0;
+          _notificationEnabled = false;
+          _selectedNotificationTime = null;
+        });
       }
     });
 
@@ -166,29 +194,105 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                 ],
               ),
               SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
+              // Notification settings
+              Row(
+                children: [
+                  Icon(Icons.notifications, size: 24),
+                  SizedBox(width: 8),
+                  Text(
+                    'Notification',
+                    style: Appstyles.headingTextStyle.copyWith(
+                      fontSize: SizeConfig.getProportionateHeight(18),
+                    ),
+                  ),
+                  Spacer(),
+                  Switch(
+                    value: _notificationEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _notificationEnabled = value;
+                        if (!value) {
+                          _selectedNotificationTime = null;
+                        }
+                      });
+                    },
+                  ),
+                ],
+              ),
+              if (_notificationEnabled) ...[
+                SizedBox(height: SizeConfig.getProportionateHeight(12.0)),
+                InkWell(
+                  onTap: _selectNotificationDateTime,
+                  child: Container(
+                    padding: EdgeInsets.all(SizeConfig.getProportionateHeight(12)),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.access_time, color: Colors.blue),
+                        SizedBox(width: 12),
+                        Text(
+                          _selectedNotificationTime == null
+                              ? 'Select notification time'
+                              : '${_selectedNotificationTime!.year}-${_selectedNotificationTime!.month.toString().padLeft(2, '0')}-${_selectedNotificationTime!.day.toString().padLeft(2, '0')} ${_selectedNotificationTime!.hour.toString().padLeft(2, '0')}:${_selectedNotificationTime!.minute.toString().padLeft(2, '0')}',
+                          style: Appstyles.normalTextStyle.copyWith(
+                            color: _selectedNotificationTime == null
+                                ? Colors.grey[600]
+                                : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
               // InkWell 위젯은 탭 이벤트를 감지하는 위젯입니다.
               // 'Add Task' 버튼입니다.
               // onTap 속성은 사용자가 버튼을 탭했을 때 실행될 콜백 함수를 정의합니다.
               InkWell(
-                onTap: () {
+                onTap: () async {
                   final title = _titleController.text.trim();
                   final description = _descriptionController.text.trim();
                   String priority = _priorities[_selectedPriorityIndex];
                   DateTime date = DateTime.now();
-      
+
                   final myTask = Task(
                     title: title,
                     description: description,
                     priority: priority,
                     date: date,
                   );
+                  // ref.listen에서 상태 초기화가 먼저 일어날 수 있으므로
+                  // notification 값을 미리 저장해둡니다.
+                  final shouldSaveNotification = _notificationEnabled;
+                  final notificationTime = _selectedNotificationTime;
+
                   // 사용자가 add task버튼을 누르면
                   // FirestoreController를 통해 새로운 작업을 추가합니다.
                   // userId와 myTask 객체를 전달하여 특정 사용자에게 작업을 연결합니다.
-                  ref.read(firestoreControllerProvider.notifier).addTask(
-                        userId: userId, 
+                  final taskId = await ref.read(firestoreControllerProvider.notifier).addTask(
+                        userId: userId,
                         task: myTask,
                       );
+
+                  // If notification is enabled and taskId was created successfully
+                  if (shouldSaveNotification &&
+                      notificationTime != null &&
+                      taskId != null) {
+                    final notification = TaskNotification(
+                      taskId: taskId,
+                      notificationTime: notificationTime,
+                    );
+
+                    await ref.read(notificationRepositoryProvider).addNotification(
+                      userId: userId,
+                      notification: notification,
+                    );
+                  }
                 },
                 child: Container(
                   alignment: Alignment.center,
