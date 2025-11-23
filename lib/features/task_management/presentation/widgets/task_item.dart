@@ -10,6 +10,8 @@ import 'package:flutter_todo_app/features/task_management/presentation/screens/m
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/priority_colors.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
+import 'package:flutter_todo_app/utils/notification_helper.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as picker;
 import 'package:intl/intl.dart';
 
 // intl 패키지를 사용하여 날짜 형식을 지정합니다.
@@ -80,7 +82,14 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                 navigator.pop();
                 return;
               }
-              // 2. 비동기 작업 수행 (여기서는 삭제)
+              // 2. 연관된 알림 먼저 삭제
+              await ref.read(notificationRepositoryProvider).deleteNotificationsForTask(
+                userId: userId,
+                taskId: taskId,
+              );
+              await NotificationHelper.cancelNotification(taskId.hashCode);
+
+              // 3. Task 삭제
               await ref
                   .read(firestoreControllerProvider.notifier)
                   .deleteTask(userId: userId, taskId: taskId);
@@ -178,9 +187,11 @@ class _TaskItemState extends ConsumerState<TaskItem> {
 
   // 알림 옵션 다이얼로그 표시
   void _showNotificationOptionsDialog(TaskNotification notification) {
+    final userId = ref.read(currentUserProvider)?.uid;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Notification'),
         icon: const Icon(Icons.notifications, color: Colors.orange),
         content: Column(
@@ -194,24 +205,64 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
               onTap: () {
-                // TODO: 시간 수정 기능 (나중에 구현)
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop();
+                // 시간 선택기 열기
+                picker.DatePicker.showDateTimePicker(
+                  context,
+                  showTitleActions: true,
+                  minTime: DateTime.now(),
+                  maxTime: DateTime.now().add(const Duration(days: 365)),
+                  currentTime: notification.notificationTime,
+                  locale: picker.LocaleType.ko,
+                  onConfirm: (newTime) async {
+                    if (userId == null) return;
+
+                    // 1. Firestore 업데이트
+                    final updatedNotification = notification.copyWith(
+                      notificationTime: newTime,
+                    );
+                    await ref.read(notificationRepositoryProvider).updateNotification(
+                      userId: userId,
+                      notificationId: notification.id,
+                      notification: updatedNotification,
+                    );
+
+                    // 2. 기존 알림 취소 후 새로 스케줄링
+                    await NotificationHelper.cancelNotification(notification.taskId.hashCode);
+                    await NotificationHelper.scheduleNotification(
+                      id: notification.taskId.hashCode,
+                      title: widget.task.title,
+                      scheduledTime: newTime,
+                      payload: notification.taskId,
+                    );
+                  },
+                );
               },
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
               title: const Text('Remove Notification'),
-              onTap: () {
-                // TODO: 알림 삭제 기능 (나중에 구현)
-                Navigator.of(context).pop();
+              onTap: () async {
+                Navigator.of(dialogContext).pop();
+
+                if (userId == null) return;
+
+                // 1. Firestore에서 알림 삭제
+                await ref.read(notificationRepositoryProvider).deleteNotification(
+                  userId: userId,
+                  notificationId: notification.id,
+                );
+
+                // 2. 예약된 로컬 알림 취소
+                await NotificationHelper.cancelNotification(notification.taskId.hashCode);
               },
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text('Cancel'),
           ),
         ],

@@ -24,8 +24,23 @@ class NotificationHelper {
       return granted ?? false;
     }
 
-    // iOS는 앱 초기화 시 자동으로 권한 요청됨
-    return true;
+    // iOS 권한 요청
+    if (Platform.isIOS) {
+      final IOSFlutterLocalNotificationsPlugin? iOSImplementation =
+          flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                  IOSFlutterLocalNotificationsPlugin>();
+
+      final bool? granted = await iOSImplementation?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      return granted ?? false;
+    }
+
+    return false;
   }
 
   /// 알림 권한 상태 확인

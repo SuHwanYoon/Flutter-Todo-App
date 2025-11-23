@@ -13,6 +13,7 @@ import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:flutter_todo_app/utils/priority_colors.dart';
 import 'package:flutter_todo_app/utils/notification_helper.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as picker;
+import 'package:app_settings/app_settings.dart';
 
 // AddTaskScreen은 새로운 작업을 추가하는 화면을 담당하는 StatefulWidget입니다.
 // ConsumerStatefulWidget을 상속하여 Riverpod의 상태 관리를 사용합니다.
@@ -58,6 +59,34 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
       },
       currentTime: _selectedNotificationTime ?? DateTime.now(),
       locale: picker.LocaleType.ko,
+    );
+  }
+
+  // 권한 거부 시 설정 이동 다이얼로그 표시
+  void _showPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Notification Permission'),
+        icon: const Icon(Icons.notifications_off, color: Colors.orange),
+        content: const Text(
+          'Notification permission is required to set reminders.\n\n'
+          'Please enable notifications in Settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              AppSettings.openAppSettings(type: AppSettingsType.notification);
+            },
+            child: const Text('Go to Settings'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -209,13 +238,25 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                   Spacer(),
                   Switch(
                     value: _notificationEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _notificationEnabled = value;
-                        if (!value) {
-                          _selectedNotificationTime = null;
+                    onChanged: (value) async {
+                      if (value) {
+                        // 토글 ON 시 권한 요청
+                        final granted = await NotificationHelper.requestNotificationPermission();
+                        if (granted) {
+                          setState(() {
+                            _notificationEnabled = true;
+                          });
+                        } else {
+                          // 권한 거부 시 설정 이동 다이얼로그 표시
+                          if (!mounted) return;
+                          _showPermissionDeniedDialog();
                         }
-                      });
+                      } else {
+                        setState(() {
+                          _notificationEnabled = false;
+                          _selectedNotificationTime = null;
+                        });
+                      }
                     },
                   ),
                 ],
