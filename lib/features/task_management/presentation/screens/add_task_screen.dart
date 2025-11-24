@@ -98,6 +98,9 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
   Widget build(BuildContext context) {
     // 화면 크기에 따라 위젯 크기를 조절하기 위해 SizeConfig를 초기화합니다.
     SizeConfig.init(context);
+    // 다크 모드 여부 확인
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     // 현재 로그인된 사용자의 ID를 가져옵니다.
     // 실제 앱에서는 이 값을 사용하여 작업을 해당 사용자에게 연결해야 합니다.
     // 예를 들어, Firestore에 작업을 추가할 때 userId를 사용하여
@@ -170,6 +173,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                     'Priority',
                     style: Appstyles.headingTextStyle.copyWith(
                       fontSize: SizeConfig.getProportionateHeight(18),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   Expanded(
@@ -211,7 +215,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                                   // 선택된 우선순위에 따라 텍스트 색상을 변경합니다.
                                   color: _selectedPriorityIndex == index
                                       ? Colors.white
-                                      : Colors.black,
+                                      : colorScheme.onSurface,
                                   fontSize: 20,
                                 ),
                               ),
@@ -227,12 +231,13 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
               // Notification settings
               Row(
                 children: [
-                  Icon(Icons.notifications, size: 24),
+                  Icon(Icons.notifications, size: 24, color: colorScheme.onSurface),
                   SizedBox(width: 8),
                   Text(
                     'Notification',
                     style: Appstyles.headingTextStyle.copyWith(
                       fontSize: SizeConfig.getProportionateHeight(18),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   Spacer(),
@@ -268,13 +273,15 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                   child: Container(
                     padding: EdgeInsets.all(SizeConfig.getProportionateHeight(12)),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: isDarkMode
+                          ? colorScheme.surfaceContainerHighest
+                          : Colors.grey[200],
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey),
+                      border: Border.all(color: colorScheme.outline),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.access_time, color: Colors.blue),
+                        Icon(Icons.access_time, color: colorScheme.primary),
                         SizedBox(width: 12),
                         Text(
                           _selectedNotificationTime == null
@@ -282,8 +289,8 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                               : '${_selectedNotificationTime!.year}-${_selectedNotificationTime!.month.toString().padLeft(2, '0')}-${_selectedNotificationTime!.day.toString().padLeft(2, '0')} ${_selectedNotificationTime!.hour.toString().padLeft(2, '0')}:${_selectedNotificationTime!.minute.toString().padLeft(2, '0')}',
                           style: Appstyles.normalTextStyle.copyWith(
                             color: _selectedNotificationTime == null
-                                ? Colors.grey[600]
-                                : Colors.black,
+                                ? colorScheme.onSurfaceVariant
+                                : colorScheme.onSurface,
                           ),
                         ),
                       ],

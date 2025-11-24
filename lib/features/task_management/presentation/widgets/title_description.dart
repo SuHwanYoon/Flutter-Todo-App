@@ -24,18 +24,31 @@ class TitleDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig.init(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Appstyles.titleTextStyle.copyWith(fontSize: 18.0)),
+        Text(
+          title,
+          style: Appstyles.titleTextStyle.copyWith(
+            fontSize: 18.0,
+            color: colorScheme.onSurface,
+          ),
+        ),
         SizedBox(height: SizeConfig.getProportionateHeight(10.0)),
         TextFormField(
           controller: controller,
+          style: TextStyle(color: colorScheme.onSurface),
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
             filled: true,
-            fillColor: Colors.grey[200],
-            prefixIcon: Icon(prefixIcon, color: Colors.black),
+            fillColor: isDarkMode
+                ? colorScheme.surfaceContainerHighest
+                : Colors.grey[200],
+            prefixIcon: Icon(prefixIcon, color: colorScheme.onSurfaceVariant),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none,
