@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
+import 'package:flutter_todo_app/features/task_management/data/firestore_repository.dart';
 import 'package:flutter_todo_app/features/task_management/data/notification_repository.dart';
 import 'package:flutter_todo_app/utils/notification_helper.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -114,6 +115,52 @@ class AuthController extends AsyncNotifier<void> {
           payload: notification.taskId,
         );
       }
+    }
+  }
+
+  /// deleteAccount는 사용자 계정을 완전히 삭제하는 비동기 메서드입니다.
+  /// [password]를 사용하여 재인증 후 삭제합니다.
+  /// 1. 재인증 (비밀번호 확인) - 먼저 확인해야 데이터 손실 방지
+  /// 2. 모든 로컬 알림 취소
+  /// 3. Firestore에서 사용자 데이터 삭제 (tasks, notifications)
+  /// 4. Firebase Auth에서 계정 삭제
+  Future<void> deleteAccount({required String password}) async {
+    state = const AsyncLoading();
+
+    final user = ref.read(currentUserProvider);
+    if (user == null) {
+      state = AsyncError('User not found', StackTrace.current);
+      return;
+    }
+
+    final userId = user.uid;
+    final authRepository = ref.read(authRepositoryProvider);
+
+    // 1. 먼저 비밀번호 확인 (재인증)
+    try {
+      await authRepository.reauthenticate(password);
+    } catch (e) {
+      state = AsyncError(e, StackTrace.current);
+      return;
+    }
+
+    // 2. 재인증 성공 후 데이터 삭제 진행
+    state = await AsyncValue.guard(() async {
+      // 모든 로컬 알림 취소
+      await NotificationHelper.cancelAllNotifications();
+
+      // Firestore에서 사용자 데이터 삭제
+      final firestoreRepository = ref.read(firestoreRepositoryProvider);
+      await firestoreRepository.deleteUserData(userId: userId);
+
+      // Firebase Auth에서 계정 삭제
+      await authRepository.deleteAccount();
+    });
+
+    if (!state.hasError) {
+      // 계정 삭제 성공 시 관련된 프로바이더들을 초기화합니다.
+      ref.invalidate(currentUserProvider);
+      ref.invalidateSelf();
     }
   }
 }

@@ -53,6 +53,31 @@ class AuthRepository {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  /// 비밀번호로 재인증합니다.
+  /// 계정 삭제 전 비밀번호 확인용으로 사용합니다.
+  Future<void> reauthenticate(String password) async {
+    final user = _auth.currentUser;
+    if (user == null || user.email == null) {
+      throw Exception('User not found');
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: password,
+    );
+    await user.reauthenticateWithCredential(credential);
+  }
+
+  /// 현재 사용자의 계정을 삭제합니다.
+  /// 재인증 후 호출해야 합니다.
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('User not found');
+    }
+    await user.delete();
+  }
 }
 
 /// [authRepositoryProvider]는 [AuthRepository]의 인스턴스를 제공하는 Riverpod 프로바이더입니다.

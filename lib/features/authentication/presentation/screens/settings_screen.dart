@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_todo_app/features/authentication/presentation/screens/delete_account_screen.dart';
 import 'package:flutter_todo_app/utils/theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,7 +42,13 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Delete Account'),
             subtitle: const Text('Permanently delete your account'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _showDeleteAccountDialog(context),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const DeleteAccountScreen(),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 16),
@@ -53,7 +60,7 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Contact Us'),
             subtitle: const Text('Get help or send feedback'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _launchUrl('https://example.com/contact'), // TODO: URL 변경
+            onTap: () => _launchUrl('https://forms.gle/MCcaaTJ2bKhyNp6a7'), // TODO: URL 변경
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
@@ -61,6 +68,16 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: const Text('Read our privacy policy'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _launchUrl('https://example.com/privacy'), // TODO: URL 변경
+          ),
+
+          const SizedBox(height: 16),
+
+          // Developer Section
+          _buildSectionHeader(context, 'Developer'),
+          const ListTile(
+            leading: Icon(Icons.email_outlined),
+            title: Text('Developer Email'),
+            subtitle: Text('suhwan6@gmail.com'), // TODO: 이메일 변경
           ),
         ],
       ),
@@ -90,34 +107,4 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  // 계정 삭제 확인 다이얼로그
-  void _showDeleteAccountDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Account'),
-        icon: const Icon(Icons.warning, color: Colors.red),
-        content: const Text(
-          'Are you sure you want to delete your account?\n\n'
-          'This action cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              // TODO: 계정 삭제 기능 구현
-            },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
