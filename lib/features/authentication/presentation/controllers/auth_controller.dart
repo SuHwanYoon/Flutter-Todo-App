@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_todo_app/features/authentication/data/auth_repository.dart';
+import 'package:flutter_todo_app/features/task_management/data/notification_repository.dart';
+import 'package:flutter_todo_app/utils/notification_helper.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_controller.g.dart';
@@ -62,6 +64,14 @@ class AuthController extends AsyncNotifier<void> {
           .read(authRepositoryProvider)
           .signInWithEmailAndPassword(email, password),
     );
+
+    // 로그인 성공 시 알림 재스케줄링
+    if (!state.hasError) {
+      final user = ref.read(currentUserProvider);
+      if (user != null) {
+        await _rescheduleNotifications(user.uid);
+      }
+    }
   }
 
   /// signOut는 사용자 로그아웃을 처리하는 비동기 메서드입니다.
@@ -70,6 +80,10 @@ class AuthController extends AsyncNotifier<void> {
     // 상태를 로딩 중으로 설정하여 UI에 로딩 상태를 알립니다.
     final authRepository = ref.read(authRepositoryProvider);
     state = const AsyncLoading();
+
+    // 로그아웃 전에 모든 로컬 알림 취소
+    await NotificationHelper.cancelAllNotifications();
+
     state = await AsyncValue.guard(authRepository.signOut);
 
     /// invalidate는 특정 프로바이더의 상태를 무효화하여 다음에 해당 프로바이더를 읽을 때
@@ -81,6 +95,25 @@ class AuthController extends AsyncNotifier<void> {
       // 로그아웃 성공 시 관련된 프로바이더들을 초기화합니다.
       ref.invalidate(currentUserProvider);
       ref.invalidateSelf();
+    }
+  }
+
+  /// 로그인 시 Firestore에서 알림 데이터를 가져와 로컬 알림으로 재스케줄링
+  Future<void> _rescheduleNotifications(String userId) async {
+    final notificationRepository = ref.read(notificationRepositoryProvider);
+    final notifications = await notificationRepository.getAllNotifications(userId: userId);
+
+    final now = DateTime.now();
+    for (final notification in notifications) {
+      // 미래의 알림만 스케줄링
+      if (notification.notificationTime.isAfter(now)) {
+        await NotificationHelper.scheduleNotification(
+          id: notification.taskId.hashCode,
+          title: 'Task Reminder', // Task 제목을 가져오려면 추가 쿼리 필요
+          scheduledTime: notification.notificationTime,
+          payload: notification.taskId,
+        );
+      }
     }
   }
 }

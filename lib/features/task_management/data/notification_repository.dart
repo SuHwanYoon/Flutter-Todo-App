@@ -102,6 +102,14 @@ class NotificationRepository {
       'isTriggered': true,
     });
   }
+
+  // Get all notifications for a user (for rescheduling on login)
+  Future<List<TaskNotification>> getAllNotifications({
+    required String userId,
+  }) async {
+    final querySnapshot = await _notificationsRef(userId).get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
 }
 
 @Riverpod(keepAlive: true)
