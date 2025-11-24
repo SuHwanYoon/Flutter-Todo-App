@@ -160,9 +160,12 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
               // 작업 설명을 입력받는 위젯입니다.
               TitleDescription(
                 title: ' Task Description',
-                prefixIcon: Icons.notes,
+                prefixIcon: Icons.description,
                 hintText: 'Enter task description',
-                maxLines: 3,
+                minLines: 4,
+                maxLines: 6,
+                maxLength: 100,
+                showCharacterCount: true,
                 controller: _descriptionController,
               ),
               SizedBox(height: SizeConfig.getProportionateHeight(20.0)),

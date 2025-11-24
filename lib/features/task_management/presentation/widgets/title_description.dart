@@ -13,6 +13,9 @@ class TitleDescription extends StatelessWidget {
     required this.hintText,
     required this.maxLines,
     required this.controller,
+    this.maxLength,
+    this.showCharacterCount = false,
+    this.minLines,
   });
 
   final String title;
@@ -20,6 +23,9 @@ class TitleDescription extends StatelessWidget {
   final String hintText;
   final int maxLines;
   final TextEditingController controller;
+  final int? maxLength;
+  final bool showCharacterCount;
+  final int? minLines;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +47,20 @@ class TitleDescription extends StatelessWidget {
         TextFormField(
           controller: controller,
           style: TextStyle(color: colorScheme.onSurface),
+          maxLines: maxLines,
+          minLines: minLines,
+          maxLength: maxLength,
+          buildCounter: showCharacterCount && maxLength != null
+              ? (context, {required currentLength, required isFocused, maxLength}) {
+                  return Text(
+                    '$currentLength/$maxLength',
+                    style: TextStyle(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  );
+                }
+              : null,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
@@ -48,12 +68,19 @@ class TitleDescription extends StatelessWidget {
             fillColor: isDarkMode
                 ? colorScheme.surfaceContainerHighest
                 : Colors.grey[200],
-            prefixIcon: Icon(prefixIcon, color: colorScheme.onSurfaceVariant),
+            prefixIcon: maxLines > 1
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 60),
+                    child: Icon(prefixIcon, color: colorScheme.onSurfaceVariant),
+                  )
+                : Icon(prefixIcon, color: colorScheme.onSurfaceVariant),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none,
             ),
+            alignLabelWithHint: true,
           ),
+          textAlignVertical: TextAlignVertical.top,
         ),
       ],
     );
