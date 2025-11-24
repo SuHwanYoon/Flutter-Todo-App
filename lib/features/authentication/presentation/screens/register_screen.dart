@@ -7,7 +7,6 @@ import 'package:flutter_todo_app/features/authentication/presentation/widgets/co
 import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 // RegisterScreen은 ConsumerStatefulWidget입니다.
@@ -31,8 +30,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   // 비밀번호 입력 필드를 제어하기 위한 컨트롤러.
   final _passwordEditingController = TextEditingController();
 
-  // '이용약관 동의' 체크박스의 상태를 저장하는 변수.
-  bool isChecked = false;
 
   // 회원가입 검증 및 실행을 위한 메서드입니다.
   void _validateDetails() {
@@ -145,28 +142,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: true,
                   controller: _passwordEditingController,
                 ),
-                SizedBox(height: SizeConfig.getProportionateHeight(15)),
-                // 체크박스와 텍스트를 가로로 나란히 배치하기 위해 Row 위젯을 사용합니다.
-                Row(
-                  children: [
-                    // '이용약관 동의' 체크박스입니다.
-                    Checkbox(
-                      value: isChecked,
-                      // 체크박스의 상태가 변경될 때 호출됩니다.
-                      onChanged: (bool? value) {
-                        // setState를 호출하여 isChecked 상태를 업데이트하고 화면을 다시 그리도록 합니다.
-                        setState(() {
-                          isChecked = value!;
-                        });
-                      },
-                    ),
-                    // 체크박스 옆에 표시될 텍스트입니다.
-                    Text(
-                      'I agree to the Terms & Conditions',
-                      style: Appstyles.normalTextStyle,
-                    ),
-                  ],
-                ),
                 SizedBox(height: SizeConfig.getProportionateHeight(25)),
                 // InkWell 위젯은 자식 위젯에 탭 효과(물결 효과)를 추가합니다.
                 InkWell(
@@ -196,97 +171,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             ),
                           ),
                   ),
-                ),
-                SizedBox(height: SizeConfig.getProportionateHeight(10)),
-
-                // "OR" 텍스트와 좌우 구분선을 표시하는 UI입니다.
-                // Row를 사용하여 자식 위젯들을 가로로 배치합니다.
-                Row(
-                  // 자식 위젯들을 주 축(가로)의 중앙에 정렬합니다.
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // 왼쪽 구분선입니다. 화면 너비의 40%를 차지합니다.
-                    Container(
-                      height: SizeConfig.getProportionateHeight(1),
-                      width: SizeConfig.screenWidth * 0.40,
-                      decoration: const BoxDecoration(color: Colors.grey),
-                    ),
-                    // "OR" 텍스트와 구분선 사이의 간격을 줍니다.
-                    SizedBox(width: SizeConfig.getProportionateWidth(10)),
-                    // "OR" 텍스트를 표시합니다.
-                    Text('OR', style: Appstyles.normalTextStyle),
-                    // "OR" 텍스트와 구분선 사이의 간격을 줍니다.
-                    SizedBox(width: SizeConfig.getProportionateWidth(10)),
-                    // 오른쪽 구분선입니다. 화면 너비의 40%를 차지합니다.
-                    Container(
-                      height: SizeConfig.getProportionateHeight(1),
-                      width: SizeConfig.screenWidth * 0.40,
-                      decoration: const BoxDecoration(color: Colors.grey),
-                    ),
-                  ],
-                ),
-                SizedBox(height: SizeConfig.getProportionateHeight(10)),
-                // 소셜 로그인 버튼들을 표시하는 UI입니다.
-                // Row를 사용하여 버튼들을 가로로 나란히 배치합니다.
-                Row(
-                  // 버튼들 사이에 동일한 간격을 줍니다.
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // 구글 로그인 버튼
-                    Container(
-                      height: SizeConfig.getProportionateHeight(40),
-                      width: SizeConfig.screenWidth * 0.25,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                          width: 2,
-                        ),
-                      ),
-                      child: const FaIcon(
-                        FontAwesomeIcons.google,
-                        color: Colors.deepOrange,
-                      ),
-                    ),
-                    // 애플 로그인 버튼
-                    Container(
-                      height: SizeConfig.getProportionateHeight(40),
-                      width: SizeConfig.screenWidth * 0.25,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                          width: 2,
-                        ),
-                      ),
-                      child: const FaIcon(
-                        FontAwesomeIcons.apple,
-                        color: Colors.black,
-                      ),
-                    ),
-                    // 페이스북 로그인 버튼
-                    Container(
-                      height: SizeConfig.getProportionateHeight(40),
-                      width: SizeConfig.screenWidth * 0.25,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.black,
-                          style: BorderStyle.solid,
-                          width: 2,
-                        ),
-                      ),
-                      child: const FaIcon(
-                        FontAwesomeIcons.facebook,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(40)),
                 // 이미 계정이 있는 사용자를 위한 로그인 화면 이동 UI입니다.

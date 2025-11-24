@@ -33,7 +33,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _passwordEditingController = TextEditingController();
 
   // '이용약관 동의' 체크박스의 상태를 저장하는 변수.
-  bool isChecked = false;
+  // bool isChecked = false;
 
   // 로그인 검증 및 실행을 위한 메서드입니다.
   void _validateDetails() {
@@ -148,26 +148,26 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(15)),
                 // 체크박스와 텍스트를 가로로 나란히 배치하기 위해 Row 위젯을 사용합니다.
-                Row(
-                  children: [
-                    // '이용약관 동의' 체크박스입니다.
-                    Checkbox(
-                      value: isChecked,
-                      // 체크박스의 상태가 변경될 때 호출됩니다.
-                      onChanged: (bool? value) {
-                        // setState를 호출하여 isChecked 상태를 업데이트하고 화면을 다시 그리도록 합니다.
-                        setState(() {
-                          isChecked = value!;
-                        });
-                      },
-                    ),
-                    // 체크박스 옆에 표시될 텍스트입니다.
-                    Text(
-                      'I agree to the Terms & Conditions',
-                      style: Appstyles.normalTextStyle,
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     // '이용약관 동의' 체크박스입니다.
+                //     Checkbox(
+                //       value: isChecked,
+                //       // 체크박스의 상태가 변경될 때 호출됩니다.
+                //       onChanged: (bool? value) {
+                //         // setState를 호출하여 isChecked 상태를 업데이트하고 화면을 다시 그리도록 합니다.
+                //         setState(() {
+                //           isChecked = value!;
+                //         });
+                //       },
+                //     ),
+                //     // 체크박스 옆에 표시될 텍스트입니다.
+                //     Text(
+                //       'I agree to the Terms & Conditions',
+                //       style: Appstyles.normalTextStyle,
+                //     ),
+                //   ],
+                // ),
                 SizedBox(height: SizeConfig.getProportionateHeight(25)),
                 // InkWell 위젯은 자식 위젯에 탭 효과(물결 효과)를 추가합니다.
                 InkWell(
