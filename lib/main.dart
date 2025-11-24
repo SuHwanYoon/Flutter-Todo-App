@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/firebase_options.dart';
+import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/theme_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -120,8 +121,10 @@ Future<void> _initializeNotifications() async {
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse: (NotificationResponse response) {
-      // 알림 탭 시 동작 (나중에 구현)
-      print('알림 탭: ${response.payload}');
+      // 알림 탭 시 AllTasksScreen(탭 0)으로 이동
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        mainScreenKey.currentState?.changeTab(0);
+      });
     },
   );
 

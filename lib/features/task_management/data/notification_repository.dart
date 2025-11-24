@@ -121,3 +121,17 @@ Stream<TaskNotification?> taskNotification(
       .watchNotificationsForTask(userId: userId, taskId: taskId)
       .map((notifications) => notifications.isEmpty ? null : notifications.first);
 }
+
+// StreamProvider to load all notifications for a user
+@riverpod
+Stream<List<TaskNotification>> loadNotifications(Ref ref, String userId) {
+  final firestore = FirebaseFirestore.instance;
+  return firestore
+      .collection('users')
+      .doc(userId)
+      .collection('notifications')
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => TaskNotification.fromJson(doc.data()))
+          .toList());
+}

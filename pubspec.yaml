@@ -50,6 +50,7 @@ dependencies:
   flutter_datetime_picker_plus: ^2.2.0
   app_settings: ^6.1.1
   shared_preferences: ^2.5.3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
