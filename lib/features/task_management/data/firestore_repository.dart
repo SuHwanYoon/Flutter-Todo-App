@@ -161,6 +161,30 @@ class FirestoreRepository {
         .doc(taskId)
         .update({'isCompleted': isCompleted});
   }
+
+  // deleteUserData 메서드는 특정 사용자의 모든 데이터를 Firestore에서 삭제합니다.
+  // tasks와 notifications 서브컬렉션의 모든 문서를 삭제한 후 users 문서를 삭제합니다.
+  Future<void> deleteUserData({required String userId}) async {
+    final userDocRef = _firestore.collection('users').doc(userId);
+
+    // tasks 서브컬렉션의 모든 문서 삭제
+    final tasksSnapshot = await userDocRef.collection('tasks').get();
+    for (final doc in tasksSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // notifications 서브컬렉션의 모든 문서 삭제
+    final notificationsSnapshot = await userDocRef.collection('notifications').get();
+    for (final doc in notificationsSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    // users 문서 삭제 (문서가 존재하는 경우)
+    final userDoc = await userDocRef.get();
+    if (userDoc.exists) {
+      await userDocRef.delete();
+    }
+  }
 }
 
 // Riverpod의 @Riverpod 어노테이션을 사용하여 FirestoreRepository를 제공하는 프로바이더를 정의합니다.

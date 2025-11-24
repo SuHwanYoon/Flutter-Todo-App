@@ -102,6 +102,14 @@ class NotificationRepository {
       'isTriggered': true,
     });
   }
+
+  // Get all notifications for a user (for rescheduling on login)
+  Future<List<TaskNotification>> getAllNotifications({
+    required String userId,
+  }) async {
+    final querySnapshot = await _notificationsRef(userId).get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
 }
 
 @Riverpod(keepAlive: true)
@@ -120,4 +128,18 @@ Stream<TaskNotification?> taskNotification(
   return repository
       .watchNotificationsForTask(userId: userId, taskId: taskId)
       .map((notifications) => notifications.isEmpty ? null : notifications.first);
+}
+
+// StreamProvider to load all notifications for a user
+@riverpod
+Stream<List<TaskNotification>> loadNotifications(Ref ref, String userId) {
+  final firestore = FirebaseFirestore.instance;
+  return firestore
+      .collection('users')
+      .doc(userId)
+      .collection('notifications')
+      .snapshots()
+      .map((snapshot) => snapshot.docs
+          .map((doc) => TaskNotification.fromJson(doc.data()))
+          .toList());
 }

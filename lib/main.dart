@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/firebase_options.dart';
+import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
+import 'package:flutter_todo_app/utils/theme_provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -66,6 +68,9 @@ class MyApp extends ConsumerWidget {
   // ref: Riverpod의 Provider에 접근하기 위한 객체
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 현재 테마 모드 가져오기
+    final themeMode = ref.watch(appThemeModeProvider);
+
     // MaterialApp.router는 GoRouter와 같은 라우팅 패키지를 사용할 때 쓰는 위젯입니다.
     return MaterialApp.router(
       // 라우팅 설정을 지정합니다.
@@ -80,33 +85,14 @@ class MyApp extends ConsumerWidget {
       // 디버그 모드일 때 화면 오른쪽 위에 표시되는 'DEBUG' 배너를 숨깁니다.
       debugShowCheckedModeBanner: false,
 
-      // theme는 앱 전체의 디자인 스타일(색상, 글꼴 등)을 지정합니다.
-      theme: ThemeData(
-        // 앱의 기본 색상 팔레트를 설정합니다.
-        // seedColor 하나만 지정하면 Material 3 디자인 시스템에 따라
-        // 관련된 여러 색상(primary, secondary 등)이 자동으로 생성됩니다.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      // 테마 모드 설정 (light, dark, system)
+      themeMode: themeMode,
 
-        // 앱 전체에 Material 3 디자인을 적용합니다.
-        // 최신 안드로이드 디자인 가이드라인으로, 더 현대적인 UI를 제공합니다.
-        // ios의 경우 Cupertino 디자인이 기본이지만,
-        // Material 3를 적용하면 안드로이드와 유사한 디자인이 됩니다
-        useMaterial3: true,
-        // ios, android모두에서 동일한 UI를 위해 appbarTheme를 주석처리합니다.
-        // 만약 ios에서 Cupertino 디자인을 유지하고 싶다면
-        // appBarTheme를 주석처리하고, statusBarBrightness만 설정하면 됩니다
-        // appBarTheme는 앱바의 전반적인 스타일을 지정합니다.
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          // foregroundColor는 앱바의 아이콘과 텍스트 색상을 지정합니다.
-          foregroundColor: Colors.black,
-          titleTextStyle: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: Colors.black
-          ),
-        ),
-      ),
+      // Light 테마 설정
+      theme: lightTheme,
+
+      // Dark 테마 설정
+      darkTheme: darkTheme,
     );
   }
 }
@@ -135,8 +121,10 @@ Future<void> _initializeNotifications() async {
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse: (NotificationResponse response) {
-      // 알림 탭 시 동작 (나중에 구현)
-      print('알림 탭: ${response.payload}');
+      // 알림 탭 시 AllTasksScreen(탭 0)으로 이동
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        mainScreenKey.currentState?.changeTab(0);
+      });
     },
   );
 

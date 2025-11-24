@@ -102,7 +102,12 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     });
 
     // Scaffold를 가장 바깥쪽에 두어 화면 전체의 레이아웃을 잡습니다.
-    return Scaffold(
+    // 로그인 화면은 항상 라이트 테마 적용
+    return Theme(
+      data: ThemeData.light().copyWith(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      ),
+      child: Scaffold(
       // body의 내용물만 SafeArea로 감싸서 시스템 UI(상태바, 노치 등)를 피하게 합니다.
       body: SafeArea(
         // 화면 전체에 좌우, 상단 여백을 줍니다.
@@ -314,6 +319,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

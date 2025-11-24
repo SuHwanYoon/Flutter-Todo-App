@@ -281,12 +281,16 @@ class _TaskItemState extends ConsumerState<TaskItem> {
       taskId: widget.task.id,
     ));
 
+    // 다크 모드 여부 확인
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8.0),
-        color: Colors.grey[300],
+        color: isDarkMode ? colorScheme.surfaceContainerHighest : Colors.grey[300],
       ),
       child: Row(
         children: [
@@ -299,7 +303,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   widget.task.title,
                   style: Appstyles.headingTextStyle.copyWith(
                     fontSize: 18,
-                    color: Colors.black,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(8)),
@@ -307,7 +311,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   widget.task.description,
                   style: Appstyles.normalTextStyle.copyWith(
                     fontSize: 14,
-                    color: Colors.grey[800],
+                    color: colorScheme.onSurfaceVariant,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -398,14 +402,14 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                     Icon(
                       Icons.calendar_today,
                       size: 14,
-                      color: Colors.grey[600],
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     SizedBox(width: SizeConfig.getProportionateWidth(5)),
                     Text(
                       'Created: ${formatDate(widget.task.date)}',
                       style: Appstyles.normalTextStyle.copyWith(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -424,6 +428,12 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   scale: 1.5,
                   child: Checkbox(
                     value: widget.task.isCompleted,
+                    activeColor: colorScheme.primary,
+                    checkColor: colorScheme.onPrimary,
+                    side: BorderSide(
+                      color: colorScheme.onSurfaceVariant,
+                      width: 2,
+                    ),
                     onChanged: (bool? value) {
                       // 체크박스 상태 변경 액션
                       if (value == null) {
@@ -452,13 +462,21 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.edit, size: 30),
+                      icon: Icon(
+                        Icons.edit,
+                        size: 30,
+                        color: colorScheme.primary,
+                      ),
                       onPressed: () {
                         _updateTask();
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete, size: 30),
+                      icon: Icon(
+                        Icons.delete,
+                        size: 30,
+                        color: colorScheme.error,
+                      ),
                       onPressed: () {
                         _deleteTask(widget.task.id);
                       },

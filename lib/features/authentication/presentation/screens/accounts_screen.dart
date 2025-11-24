@@ -12,6 +12,7 @@ class AccountsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return SafeArea(
       child: Scaffold(
@@ -38,21 +39,30 @@ class AccountsScreen extends ConsumerWidget {
             children: [
               Text(
                 'Account Infomation',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
               ),
               SizedBox(height: 20),
-              const Icon(Icons.account_circle, size: 100, color: Colors.green),
-              Text(currentUser?.email ?? 'N/A'),
+              Icon(Icons.account_circle, size: 100, color: colorScheme.primary),
+              Text(
+                currentUser?.email ?? 'N/A',
+                style: TextStyle(color: colorScheme.onSurfaceVariant),
+              ),
               // Text(currentUser?.uid ?? 'N/A'),
               SizedBox(height: SizeConfig.getProportionateHeight(20)),
               InkWell(
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
+                    builder: (dialogContext) => AlertDialog(
                       title: Text(
                         'Are you sure you want to sign out?',
-                        style: Appstyles.normalTextStyle,
+                        style: Appstyles.normalTextStyle.copyWith(
+                          color: Theme.of(dialogContext).colorScheme.onSurface,
+                        ),
                       ),
                       icon: const Icon(
                         Icons.logout,
@@ -61,17 +71,19 @@ class AccountsScreen extends ConsumerWidget {
                       ),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pop(dialogContext),
                           child: Text(
                             'Cancel',
-                            style: Appstyles.normalTextStyle,
+                            style: Appstyles.normalTextStyle.copyWith(
+                              color: Theme.of(dialogContext).colorScheme.onSurface,
+                            ),
                           ),
                         ),
                         TextButton(
                           onPressed: () async {
                             // 현재 컨텍스트를 저장
-                            final navigator = Navigator.of(context);
-                            // repositoryProvider직접 호출대신 
+                            final navigator = Navigator.of(dialogContext);
+                            // repositoryProvider직접 호출대신
                             // controllerProvider.notifier를 사용
                             await ref
                                 .read(authControllerProvider.notifier)
