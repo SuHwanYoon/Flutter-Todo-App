@@ -67,7 +67,7 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Privacy Policy'),
             subtitle: const Text('Read our privacy policy'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _launchUrl('https://example.com/privacy'), // TODO: URL 변경
+            onTap: () => _launchUrl('https://doc-hosting.flycricket.io/oneulyi-halil-privacy-policy/f8f480a5-fa2d-4c65-b550-32bcb6f3b5b3/privacy'), // TODO: URL 변경
           ),
 
           const SizedBox(height: 16),
