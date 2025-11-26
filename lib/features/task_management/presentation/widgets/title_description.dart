@@ -16,6 +16,7 @@ class TitleDescription extends StatelessWidget {
     this.maxLength,
     this.showCharacterCount = false,
     this.minLines,
+    this.focusNode,
   });
 
   final String title;
@@ -26,6 +27,7 @@ class TitleDescription extends StatelessWidget {
   final int? maxLength;
   final bool showCharacterCount;
   final int? minLines;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,7 @@ class TitleDescription extends StatelessWidget {
         SizedBox(height: SizeConfig.getProportionateHeight(10.0)),
         TextFormField(
           controller: controller,
+          focusNode: focusNode,
           style: TextStyle(color: colorScheme.onSurface),
           maxLines: maxLines,
           minLines: minLines,

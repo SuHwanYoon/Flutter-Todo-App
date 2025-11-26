@@ -14,6 +14,7 @@ import 'package:flutter_todo_app/utils/priority_colors.dart';
 import 'package:flutter_todo_app/utils/notification_helper.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as picker;
 import 'package:app_settings/app_settings.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 
 // AddTaskScreen은 새로운 작업을 추가하는 화면을 담당하는 StatefulWidget입니다.
 // ConsumerStatefulWidget을 상속하여 Riverpod의 상태 관리를 사용합니다.
@@ -29,6 +30,9 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  // Description 필드의 포커스를 관리하기 위한 FocusNode입니다.
+  final _descriptionFocusNode = FocusNode();
+
   // 우선순위 선택 버튼에 사용될 텍스트 리스트입니다.
   final List<String> _priorities = ['Low', 'Medium', 'High'];
   // 현재 선택된 우선순위의 인덱스를 저장하는 변수입니다.
@@ -40,9 +44,10 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
 
   @override
   void dispose() {
-    // 위젯이 dispose될 때 컨트롤러를 정리하여 메모리 누수를 방지합니다.
+    // 위젯이 dispose될 때 컨트롤러와 FocusNode를 정리하여 메모리 누수를 방지합니다.
     _titleController.dispose();
     _descriptionController.dispose();
+    _descriptionFocusNode.dispose();
     super.dispose();
   }
 
@@ -144,10 +149,16 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
             'Add Task',
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
-          child: Column(
-            children: [
+        body: KeyboardActions(
+          config: _buildKeyboardActionsConfig(context, colorScheme, isDarkMode),
+          child: GestureDetector(
+            // 화면 탭하면 키보드 닫기
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
+                child: Column(
+                  children: [
               // 작업 제목을 입력받는 위젯입니다.
               TitleDescription(
                 title: ' Task Title',
@@ -167,6 +178,7 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                 maxLength: 100,
                 showCharacterCount: true,
                 controller: _descriptionController,
+                focusNode: _descriptionFocusNode,
               ),
               SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
               // 우선순위를 선택하는 Row 위젯입니다.
@@ -381,10 +393,50 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                   ),
                 ),
               ),
-            ],
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  // KeyboardActions 설정을 반환하는 메서드
+  KeyboardActionsConfig _buildKeyboardActionsConfig(
+    BuildContext context,
+    ColorScheme colorScheme,
+    bool isDarkMode,
+  ) {
+    return KeyboardActionsConfig(
+      keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+      keyboardBarColor: isDarkMode
+          ? colorScheme.surfaceContainer
+          : Colors.grey[300],
+      nextFocus: false,
+      actions: [
+        KeyboardActionsItem(
+          focusNode: _descriptionFocusNode,
+          toolbarButtons: [
+            (node) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: IconButton(
+                  onPressed: () {
+                    node.unfocus();
+                  },
+                  icon: Icon(
+                    Icons.keyboard_hide_rounded,
+                    color: colorScheme.primary,
+                  ),
+                  tooltip: '키보드 닫기',
+                ),
+              );
+            },
+          ],
+        ),
+      ],
     );
   }
 }
