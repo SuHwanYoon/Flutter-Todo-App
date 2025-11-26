@@ -9,6 +9,7 @@ import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // SignInScreen은 위젯 클래스 입니다.
 // SignInScreen은 ConsumerStatefulWidget입니다.
@@ -226,109 +227,113 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: SizeConfig.getProportionateHeight(10)),
-                // 소셜 로그인 버튼들을 표시하는 UI입니다.
-                // Naver 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      // TODO: Naver 로그인 로직 구현
-                    },
-                    icon: const Text(
-                      'N',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                SizedBox(height: SizeConfig.getProportionateHeight(20)),
+                // 소셜 로그인 아이콘들을 가로로 나열
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // TODO: Naver 로그인 구현 예정 (v1.2.0)
+                    // // Naver 로그인 아이콘
+                    // InkWell(
+                    //   onTap: () {
+                    //     // TODO: Naver 로그인 로직 구현
+                    //   },
+                    //   borderRadius: BorderRadius.circular(12),
+                    //   child: Container(
+                    //     width: 56,
+                    //     height: 56,
+                    //     decoration: BoxDecoration(
+                    //       color: const Color(0xFF03C75A),
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     child: const Center(
+                    //       child: Text(
+                    //         'N',
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 28,
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(width: SizeConfig.getProportionateWidth(16)),
+                    // TODO: Kakao 로그인 구현 예정 (v1.2.0)
+                    // // Kakao 로그인 아이콘
+                    // InkWell(
+                    //   onTap: () {
+                    //     // TODO: Kakao 로그인 로직 구현
+                    //   },
+                    //   borderRadius: BorderRadius.circular(12),
+                    //   child: Container(
+                    //     width: 56,
+                    //     height: 56,
+                    //     decoration: BoxDecoration(
+                    //       color: const Color(0xFFFEE500),
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     child: const Center(
+                    //       child: Icon(
+                    //         Icons.chat_bubble,
+                    //         color: Colors.black87,
+                    //         size: 28,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(width: SizeConfig.getProportionateWidth(16)),
+                    // Google 로그인 아이콘
+                    InkWell(
+                      onTap: () {
+                        ref
+                            .read(authControllerProvider.notifier)
+                            .signInWithGoogle();
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: const Center(
+                          child: FaIcon(
+                            FontAwesomeIcons.google,
+                            size: 28,
+                            color: Color(0xFF4285F4), // Google 파란색
+                          ),
+                        ),
                       ),
                     ),
-                    label: const Text(
-                      '네이버 로그인',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    SizedBox(width: SizeConfig.getProportionateWidth(16)),
+                    // Apple 로그인 아이콘
+                    InkWell(
+                      onTap: () {
+                        ref
+                            .read(authControllerProvider.notifier)
+                            .signInWithApple();
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.apple,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF03C75A),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: SizeConfig.getProportionateHeight(12)),
-                // Kakao 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      // TODO: Kakao 로그인 로직 구현
-                    },
-                    icon: const Icon(
-                      Icons.chat_bubble,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                    label: const Text(
-                      '카카오 로그인',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFEE500),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: SizeConfig.getProportionateHeight(12)),
-                // Google 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: Google 로그인 로직 구현
-                    },
-                    icon: Image.network(
-                      'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
-                      height: 24,
-                      width: 24,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.g_mobiledata, size: 24),
-                    ),
-                    label: const Text(
-                      'Sign in with Google',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: const BorderSide(color: Colors.grey),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: SizeConfig.getProportionateHeight(12)),
-                // Apple 공식 로그인 버튼
-                SignInWithAppleButton(
-                  onPressed: () {
-                    // TODO: Apple 로그인 로직 구현
-                  },
-                  style: SignInWithAppleButtonStyle.black,
+                  ],
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(40)),
                 // 계정이 없는 사용자를 위한 회원가입 화면 이동 UI입니다.

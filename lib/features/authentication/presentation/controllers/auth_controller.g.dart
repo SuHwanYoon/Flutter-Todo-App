@@ -6,7 +6,7 @@ part of 'auth_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authControllerHash() => r'7967f5b6c88d896c333f945df7009caa0debe9db';
+String _$authControllerHash() => r'9213db824ca4a77a5093d75bc1e0ae4dc78e06ff';
 
 /// [AuthController]는 인증 관련 상태를 관리하고 비즈니스 로직을 처리합니다.
 ///

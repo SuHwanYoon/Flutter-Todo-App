@@ -75,6 +75,46 @@ class AuthController extends AsyncNotifier<void> {
     }
   }
 
+  /// signInWithGoogle은 Google 계정으로 로그인을 처리하는 비동기 메서드입니다.
+  /// state 상태변수가 바뀜
+  Future<void> signInWithGoogle() async {
+    // 상태를 로딩 중으로 설정하여 UI에 로딩 상태를 알립니다.
+    state = const AsyncLoading();
+    // authRepositoryProvider를 통해 Google 로그인 로직을 호출하고,
+    // 결과를 AsyncValue.guard를 통해 상태에 반영합니다.
+    state = await AsyncValue.guard(
+      () => ref.read(authRepositoryProvider).signInWithGoogle(),
+    );
+
+    // 로그인 성공 시 알림 재스케줄링
+    if (!state.hasError) {
+      final user = ref.read(currentUserProvider);
+      if (user != null) {
+        await _rescheduleNotifications(user.uid);
+      }
+    }
+  }
+
+  /// signInWithApple은 Apple 계정으로 로그인을 처리하는 비동기 메서드입니다.
+  /// state 상태변수가 바뀜
+  Future<void> signInWithApple() async {
+    // 상태를 로딩 중으로 설정하여 UI에 로딩 상태를 알립니다.
+    state = const AsyncLoading();
+    // authRepositoryProvider를 통해 Apple 로그인 로직을 호출하고,
+    // 결과를 AsyncValue.guard를 통해 상태에 반영합니다.
+    state = await AsyncValue.guard(
+      () => ref.read(authRepositoryProvider).signInWithApple(),
+    );
+
+    // 로그인 성공 시 알림 재스케줄링
+    if (!state.hasError) {
+      final user = ref.read(currentUserProvider);
+      if (user != null) {
+        await _rescheduleNotifications(user.uid);
+      }
+    }
+  }
+
   /// signOut는 사용자 로그아웃을 처리하는 비동기 메서드입니다.
   /// state 상태변수가 바뀜
   Future<void> signOut() async {
