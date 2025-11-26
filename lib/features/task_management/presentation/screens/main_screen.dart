@@ -89,6 +89,8 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     return Scaffold(
       body: TabBarView(
         controller: _tabController,
+        // 스와이프로 탭 전환 비활성화 - 하단 탭바만 사용 가능
+        physics: const NeverScrollableScrollPhysics(),
         children: const [
           AllTasksScreen(),
           IncompleteTasksScreen(),
