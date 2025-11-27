@@ -372,6 +372,16 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                       title: '✅ 알림 테스트',
                       body: '할일 "$title"의 알림이 ${notificationTime.toString()}에 예약되었습니다!',
                     );
+
+                    // 🧪 추가 테스트: 30초 후 알림 (에뮬레이터 테스트용)
+                    await NotificationHelper.scheduleNotification(
+                      id: 8888,
+                      title: '🧪 30초 테스트',
+                      scheduledTime: DateTime.now().add(const Duration(seconds: 30)),
+                    );
+
+                    // 🐛 디버그: 대기 중인 알림 확인
+                    await NotificationHelper.checkPendingNotifications();
                   }
                 },
                 child: Container(

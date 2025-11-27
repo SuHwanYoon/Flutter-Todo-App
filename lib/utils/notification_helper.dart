@@ -104,6 +104,24 @@ class NotificationHelper {
     );
   }
 
+  /// Android에서 정확한 알람 권한 확인 (Android 12+)
+  static Future<bool> canScheduleExactAlarms() async {
+    if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                  AndroidFlutterLocalNotificationsPlugin>();
+
+      final bool? canSchedule =
+          await androidImplementation?.canScheduleExactNotifications();
+
+      print('🔔 [Notification] 정확한 알람 권한: ${canSchedule == true ? "허용됨 ✅" : "거부됨 ❌"}');
+
+      return canSchedule ?? false;
+    }
+    return true; // iOS는 항상 true
+  }
+
   /// 예약된 알림 스케줄링
   ///
   /// [id]: 알림 ID (같은 ID를 사용하면 기존 알림이 업데이트됨)
@@ -116,6 +134,12 @@ class NotificationHelper {
     required DateTime scheduledTime,
     String? payload,
   }) async {
+    // 정확한 알람 권한 확인
+    final canSchedule = await canScheduleExactAlarms();
+    if (!canSchedule) {
+      print('⚠️ [Notification] 정확한 알람 권한이 없습니다!');
+      print('💡 [Notification] Settings > Apps > Special app access > Alarms & reminders 에서 권한을 허용하세요.');
+    }
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
       'high_importance_channel',
@@ -142,6 +166,11 @@ class NotificationHelper {
       tz.local,
     );
 
+    // 🐛 디버그: 예약 시간 로그
+    print('📅 [Notification] 현재 시간: ${tz.TZDateTime.now(tz.local)}');
+    print('📅 [Notification] 예약 시간: $tzScheduledTime');
+    print('📅 [Notification] ${tzScheduledTime.difference(tz.TZDateTime.now(tz.local)).inMinutes}분 후 알림');
+
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
@@ -151,6 +180,8 @@ class NotificationHelper {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: payload,
     );
+
+    print('✅ [Notification] 알림 스케줄링 완료: ID $id');
   }
 
   /// 특정 알림 취소
@@ -161,5 +192,20 @@ class NotificationHelper {
   /// 모든 알림 취소
   static Future<void> cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  /// 대기 중인 알림 목록 조회 (디버깅용)
+  static Future<void> checkPendingNotifications() async {
+    final List<PendingNotificationRequest> pendingNotifications =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+
+    print('🔔 [Notification] 대기 중인 알림 개수: ${pendingNotifications.length}');
+    for (final notification in pendingNotifications) {
+      print('  - ID: ${notification.id}, Title: ${notification.title}, Body: ${notification.body}');
+    }
+
+    if (pendingNotifications.isEmpty) {
+      print('⚠️ [Notification] 대기 중인 알림이 없습니다!');
+    }
   }
 }
