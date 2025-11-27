@@ -5,6 +5,7 @@
 *.swp
 .DS_Store
 CLAUDE.md
+GEMINI.md
 .atom/
 .build/
 .buildlog/

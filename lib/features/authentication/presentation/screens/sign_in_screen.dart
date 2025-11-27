@@ -8,7 +8,6 @@ import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // SignInScreen은 위젯 클래스 입니다.
