@@ -80,4 +80,36 @@ class FirestoreController extends _$FirestoreController {
     // 작업이 성공적으로 완료되면 컨트롤러의 상태를 null(초기 상태)로 되돌립니다.
     state = const AsyncData(null);
   }
+
+  // 여러 작업의 완료 상태를 일괄 업데이트합니다.
+  Future<void> batchUpdateTasksCompletion({
+    required String userId,
+    required List<String> taskIds,
+    required bool isCompleted,
+  }) async {
+    final firestoreRepository = ref.read(firestoreRepositoryProvider);
+    await AsyncValue.guard(
+      () => firestoreRepository.batchUpdateTasksCompletion(
+        userId: userId,
+        taskIds: taskIds,
+        isCompleted: isCompleted,
+      ),
+    );
+    state = const AsyncData(null);
+  }
+
+  // 여러 작업을 일괄 삭제합니다.
+  Future<void> batchDeleteTasks({
+    required String userId,
+    required List<String> taskIds,
+  }) async {
+    final firestoreRepository = ref.read(firestoreRepositoryProvider);
+    await AsyncValue.guard(
+      () => firestoreRepository.batchDeleteTasks(
+        userId: userId,
+        taskIds: taskIds,
+      ),
+    );
+    state = const AsyncData(null);
+  }
 }

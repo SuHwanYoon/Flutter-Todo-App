@@ -174,7 +174,8 @@ class FirestoreRepository {
     }
 
     // notifications 서브컬렉션의 모든 문서 삭제
-    final notificationsSnapshot = await userDocRef.collection('notifications').get();
+    final notificationsSnapshot =
+        await userDocRef.collection('notifications').get();
     for (final doc in notificationsSnapshot.docs) {
       await doc.reference.delete();
     }
@@ -184,6 +185,35 @@ class FirestoreRepository {
     if (userDoc.exists) {
       await userDocRef.delete();
     }
+  }
+
+  // 여러 작업의 완료 상태를 일괄 업데이트합니다.
+  Future<void> batchUpdateTasksCompletion({
+    required String userId,
+    required List<String> taskIds,
+    required bool isCompleted,
+  }) async {
+    final batch = _firestore.batch();
+    final tasksCollection =
+        _firestore.collection('users').doc(userId).collection('tasks');
+
+    for (final taskId in taskIds) {
+      batch.update(tasksCollection.doc(taskId), {'isCompleted': isCompleted});
+    }
+    await batch.commit();
+  }
+
+  // 여러 작업을 일괄 삭제합니다.
+  Future<void> batchDeleteTasks(
+      {required String userId, required List<String> taskIds}) async {
+    final batch = _firestore.batch();
+    final tasksCollection =
+        _firestore.collection('users').doc(userId).collection('tasks');
+
+    for (final taskId in taskIds) {
+      batch.delete(tasksCollection.doc(taskId));
+    }
+    await batch.commit();
   }
 }
 
