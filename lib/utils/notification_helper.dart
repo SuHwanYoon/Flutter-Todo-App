@@ -2,9 +2,14 @@ import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_todo_app/main.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:app_settings/app_settings.dart';
+import 'package:flutter/services.dart';
 
 /// 알림 권한 요청 및 관리 헬퍼 클래스
 class NotificationHelper {
+  // 네이티브 채널 (배터리 최적화 제외 요청용)
+  static const platform = MethodChannel('com.yoon.flutter_todo_app/battery');
+  
   /// Android 13 이상에서 알림 권한 요청
   ///
   /// Android 13(API 33) 이상에서는 런타임에 알림 권한을 요청해야 합니다.
@@ -41,6 +46,27 @@ class NotificationHelper {
     }
 
     return false;
+  }
+
+  /// Android에서 정확한 알람 권한 설정 화면으로 이동
+  static Future<void> openExactAlarmSettings() async {
+    await AppSettings.openAppSettings(type: AppSettingsType.alarm);
+  }
+
+  /// 배터리 최적화 화이트리스트 요청 (Android 12+)
+  static Future<bool> requestIgnoreBatteryOptimization() async {
+    if (Platform.isAndroid) {
+      try {
+        final result = await platform.invokeMethod<bool>(
+          'requestIgnoreBatteryOptimization',
+        );
+        return result ?? false;
+      } catch (e) {
+        print('⚠️ [Notification] 배터리 최적화 제외 요청 실패: $e');
+        return false;
+      }
+    }
+    return true;
   }
 
   /// 알림 권한 상태 확인
@@ -128,25 +154,31 @@ class NotificationHelper {
   /// [title]: 알림 제목 (Task title)
   /// [scheduledTime]: 알림이 발송될 시간
   /// [payload]: 알림 탭 시 전달될 데이터 (선택사항)
-  static Future<void> scheduleNotification({
+/// 예약된 알림 스케줄링
+static Future<void> scheduleNotification({
     required int id,
     required String title,
     required DateTime scheduledTime,
     String? payload,
   }) async {
-    // 정확한 알람 권한 확인
+    // 1. 권한 확인
     final canSchedule = await canScheduleExactAlarms();
     if (!canSchedule) {
-      print('⚠️ [Notification] 정확한 알람 권한이 없습니다!');
-      print('💡 [Notification] Settings > Apps > Special app access > Alarms & reminders 에서 권한을 허용하세요.');
+      print('⚠️ [Notification] 정확한 알람 권한이 없습니다. Inexact 알람으로 대체합니다.');
     }
+
+    // 2. 알림 설정 객체 생성
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
       'high_importance_channel',
       'High Importance Notifications',
       channelDescription: '중요한 알림을 위한 채널',
-      importance: Importance.high,
-      priority: Priority.high,
+      importance: Importance.max,
+      priority: Priority.max,
+      // 중요: 앱이 제거되어도 알림이 유지되도록
+      onlyAlertOnce: false,
+      // 백그라운드에서도 울리도록
+      showWhen: true,
     );
 
     const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
@@ -160,28 +192,44 @@ class NotificationHelper {
       iOS: iOSDetails,
     );
 
-    // DateTime을 TZDateTime으로 변환
+    // 3. 시간 변환
     final tz.TZDateTime tzScheduledTime = tz.TZDateTime.from(
       scheduledTime,
       tz.local,
     );
 
-    // 🐛 디버그: 예약 시간 로그
-    print('📅 [Notification] 현재 시간: ${tz.TZDateTime.now(tz.local)}');
+    if (tzScheduledTime.isBefore(tz.TZDateTime.now(tz.local))) {
+      print('⚠️ [Notification] 과거 시간입니다. 알림을 예약하지 않습니다.');
+      return;
+    }
+
     print('📅 [Notification] 예약 시간: $tzScheduledTime');
-    print('📅 [Notification] ${tzScheduledTime.difference(tz.TZDateTime.now(tz.local)).inMinutes}분 후 알림');
+    print('📅 [Notification] 현재 시간: ${tz.TZDateTime.now(tz.local)}');
+    print('📅 [Notification] 시간차: ${tzScheduledTime.difference(tz.TZDateTime.now(tz.local)).inMinutes}분');
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      "Don't forget!",  // 고정 메시지
-      tzScheduledTime,
-      notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      payload: payload,
-    );
-
-    print('✅ [Notification] 알림 스케줄링 완료: ID $id');
+    // 4. 알람 등록 - zonedSchedule 사용
+    try {
+      print('⏳ [Notification] zonedSchedule 호출 시도... ID: $id, Title: $title');
+      
+      // 정확한 알람 권한이 있으면 exactAllowWhileIdle 사용, 없으면 inexactAllowWhileIdle 사용
+      final scheduleMode = canSchedule 
+          ? AndroidScheduleMode.exactAllowWhileIdle
+          : AndroidScheduleMode.inexactAllowWhileIdle;
+      
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        "Don't forget!",
+        tzScheduledTime,
+        notificationDetails,
+        androidScheduleMode: scheduleMode,
+        payload: payload,
+      );
+      print('✅ [Notification] 알림 스케줄링 성공: ID $id (Mode: ${scheduleMode.toString()})');
+    } catch (e) {
+      print('❌ [Notification] 알림 스케줄링 중 에러 발생: $e');
+      rethrow;
+    }
   }
 
   /// 특정 알림 취소

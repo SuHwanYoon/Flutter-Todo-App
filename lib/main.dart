@@ -6,6 +6,7 @@ import 'package:flutter_todo_app/firebase_options.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/theme_provider.dart';
+import 'package:flutter_todo_app/utils/notification_helper.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -30,10 +31,18 @@ void main() async {
 
   // 타임존 초기화 (예약 알림용)
   tz.initializeTimeZones();
+  // UTC 기준으로 설정하고, DateTime.now()를 사용하면 자동으로 로컬 시간 변환됨
   tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+  print('🌍 [Timezone] Asia/Seoul로 설정');
 
   // 로컬 알림 초기화
   await _initializeNotifications();
+
+  // 배터리 최적화 제외 요청 (앱 시작 시 한 번)
+  await NotificationHelper.requestIgnoreBatteryOptimization().catchError((e) {
+    print('배터리 최적화 제외 요청 중 에러: $e');
+    return false;
+  });
 
   // 알림 권한 요청은 AddTaskScreen에서 토글 ON 시 요청함
 
@@ -133,7 +142,10 @@ Future<void> _initializeNotifications() async {
     'high_importance_channel', // id
     'High Importance Notifications', // 이름
     description: '중요한 알림을 위한 채널',
-    importance: Importance.high,
+    importance: Importance.max,
+    sound: RawResourceAndroidNotificationSound('notification'),
+    enableLights: true,
+    enableVibration: true,
   );
 
   await flutterLocalNotificationsPlugin
