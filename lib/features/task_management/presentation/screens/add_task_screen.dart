@@ -360,38 +360,38 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
               ],
               SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
               // ==================== 임시 디버그 버튼 ====================
-              ElevatedButton(
-                onPressed: () async {
-                  print("--- 🐛 DEBUG BUTTON TAPPED ---");
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     print("--- 🐛 DEBUG BUTTON TAPPED ---");
 
-                  final bool notificationGranted = await NotificationHelper.requestNotificationPermission();
-                  print("1. 일반 알림 권한 상태: $notificationGranted");
+              //     final bool notificationGranted = await NotificationHelper.requestNotificationPermission();
+              //     print("1. 일반 알림 권한 상태: $notificationGranted");
 
-                  final bool exactAlarmGranted = await NotificationHelper.canScheduleExactAlarms();
-                  print("2. 정확한 알람 권한 상태: $exactAlarmGranted");
+              //     final bool exactAlarmGranted = await NotificationHelper.canScheduleExactAlarms();
+              //     print("2. 정확한 알람 권한 상태: $exactAlarmGranted");
 
-                  if (!mounted) return;
+              //     if (!mounted) return;
 
-                  if (!notificationGranted) {
-                    print("-> 일반 알림 권한이 필요합니다. 다이얼로그 표시.");
-                    _showPermissionDeniedDialog();
-                  } else if (!exactAlarmGranted) {
-                    print("-> 정확한 알람 권한이 필요합니다. 다이얼로그 표시.");
-                    _showExactAlarmPermissionDialog();
-                  } else {
-                    print("✅ 모든 필수 권한이 허용된 상태입니다.");
-                    showDialog(
-                      context: context,
-                      builder: (context) => const AlertDialog(
-                        title: Text('권한 확인'),
-                        content: Text('필수 알림 권한이 모두 허용되어 있습니다.'),
-                      ),
-                    );
-                  }
-                },
-                child: const Text('Debug: Check Permissions'),
-              ),
-              SizedBox(height: SizeConfig.getProportionateHeight(10.0)),
+              //     if (!notificationGranted) {
+              //       print("-> 일반 알림 권한이 필요합니다. 다이얼로그 표시.");
+              //       _showPermissionDeniedDialog();
+              //     } else if (!exactAlarmGranted) {
+              //       print("-> 정확한 알람 권한이 필요합니다. 다이얼로그 표시.");
+              //       _showExactAlarmPermissionDialog();
+              //     } else {
+              //       print("✅ 모든 필수 권한이 허용된 상태입니다.");
+              //       showDialog(
+              //         context: context,
+              //         builder: (context) => const AlertDialog(
+              //           title: Text('권한 확인'),
+              //           content: Text('필수 알림 권한이 모두 허용되어 있습니다.'),
+              //         ),
+              //       );
+              //     }
+              //   },
+              //   child: const Text('Debug: Check Permissions'),
+              // ),
+              // SizedBox(height: SizeConfig.getProportionateHeight(10.0)),
               // ========================================================
               // InkWell 위젯은 탭 이벤트를 감지하는 위젯입니다.
               // 'Add Task' 버튼입니다.
@@ -446,21 +446,21 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                     );
 
                     // 🧪 테스트: 즉시 알림 (알림 시스템 작동 확인용)
-                    await NotificationHelper.showNotification(
-                      id: 9999,
-                      title: '✅ 알림 테스트',
-                      body: '할일 "$title"의 알림이 ${notificationTime.toString()}에 예약되었습니다!',
-                    );
+                    // await NotificationHelper.showNotification(
+                    //   id: 9999,
+                    //   title: '✅ 알림 테스트',
+                    //   body: '할일 "$title"의 알림이 ${notificationTime.toString()}에 예약되었습니다!',
+                    // );
 
                     // 🧪 추가 테스트: 10초 후 알림 (에뮬레이터 테스트용)
-                    await NotificationHelper.scheduleNotification(
-                      id: 8888,
-                      title: '🧪 10초 테스트',
-                      scheduledTime: DateTime.now().add(const Duration(seconds: 10)),
-                    );
+                    // await NotificationHelper.scheduleNotification(
+                    //   id: 8888,
+                    //   title: '🧪 10초 테스트',
+                    //   scheduledTime: DateTime.now().add(const Duration(seconds: 10)),
+                    // );
 
                     // 🐛 디버그: 대기 중인 알림 확인
-                    await NotificationHelper.checkPendingNotifications();
+                    // await NotificationHelper.checkPendingNotifications();
                   }
                 },
                 child: Container(

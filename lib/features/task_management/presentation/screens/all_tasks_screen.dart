@@ -66,7 +66,7 @@ class AllTasksScreen extends ConsumerWidget {
             // 전체 작업 관리 메뉴
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert),
-              tooltip: '전체 작업 관리',
+              tooltip: 'Manage all tasks',
               onSelected: (value) async {
                 if (userId == null) return;
 
@@ -92,7 +92,7 @@ class AllTasksScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.check_circle_outline, size: 20),
                       SizedBox(width: 12),
-                      Text('전체 완료'),
+                      Text('Complete All'),
                     ],
                   ),
                 ),
@@ -102,7 +102,7 @@ class AllTasksScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.radio_button_unchecked, size: 20),
                       SizedBox(width: 12),
-                      Text('전체 미완료'),
+                      Text('Incomplete All'),
                     ],
                   ),
                 ),
@@ -112,7 +112,7 @@ class AllTasksScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.delete_outline, color: Colors.red, size: 20),
                       SizedBox(width: 12),
-                      Text('전체 삭제', style: TextStyle(color: Colors.red)),
+                      Text('Delete All', style: TextStyle(color: Colors.red)),
                     ],
                   ),
                 ),
@@ -319,7 +319,7 @@ class AllTasksScreen extends ConsumerWidget {
 
     if (tasksToComplete.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('완료할 작업이 없습니다')),
+        const SnackBar(content: Text('No tasks to complete')),
       );
       return;
     }
@@ -327,16 +327,16 @@ class AllTasksScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('전체 완료'),
-        content: Text('${tasksToComplete.length}개의 작업을 모두 완료 처리하시겠습니까?'),
+        title: const Text('Complete All'),
+        content: Text('Mark all ${tasksToComplete.length} tasks as complete?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('완료'),
+            child: const Text('Complete'),
           ),
         ],
       ),
@@ -352,7 +352,7 @@ class AllTasksScreen extends ConsumerWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${tasksToComplete.length}개 작업을 완료했습니다')),
+          SnackBar(content: Text('Completed ${tasksToComplete.length} tasks')),
         );
       }
     }
@@ -370,7 +370,7 @@ class AllTasksScreen extends ConsumerWidget {
 
     if (tasksToIncomplete.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('미완료 처리할 작업이 없습니다')),
+        const SnackBar(content: Text('No tasks to mark as incomplete')),
       );
       return;
     }
@@ -378,16 +378,16 @@ class AllTasksScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('전체 미완료'),
-        content: Text('${tasksToIncomplete.length}개의 작업을 모두 미완료 처리하시겠습니까?'),
+        title: const Text('Incomplete All'),
+        content: Text('Mark all ${tasksToIncomplete.length} tasks as incomplete?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('미완료'),
+            child: const Text('Incomplete'),
           ),
         ],
       ),
@@ -403,7 +403,7 @@ class AllTasksScreen extends ConsumerWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${tasksToIncomplete.length}개 작업을 미완료로 변경했습니다')),
+          SnackBar(content: Text('Marked ${tasksToIncomplete.length} tasks as incomplete')),
         );
       }
     }
@@ -419,7 +419,7 @@ class AllTasksScreen extends ConsumerWidget {
     final tasks = taskAsyncValue.value ?? [];
     if (tasks.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('삭제할 작업이 없습니다')),
+        const SnackBar(content: Text('No tasks to delete')),
       );
       return;
     }
@@ -427,19 +427,19 @@ class AllTasksScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('전체 삭제'),
+        title: const Text('Delete All'),
         content: Text(
-          '${tasks.length}개의 작업을 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.',
+          'Delete all ${tasks.length} tasks?\nThis action cannot be undone.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('삭제'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -462,7 +462,7 @@ class AllTasksScreen extends ConsumerWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${tasks.length}개 작업을 삭제했습니다')),
+          SnackBar(content: Text('Deleted ${tasks.length} tasks')),
         );
       }
     }

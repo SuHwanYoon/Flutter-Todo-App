@@ -24,14 +24,6 @@ void main() async {
   // Awesome Notifications 초기화
   await NotificationHelper.initialize();
 
-  // 배터리 최적화 제외 요청 (앱 시작 시 한 번)
-  await NotificationHelper.requestIgnoreBatteryOptimization().catchError((e) {
-    print('배터리 최적화 제외 요청 중 에러: $e');
-    return false;
-  });
-
-  // 알림 권한 요청은 AddTaskScreen에서 토글 ON 시 요청함
-
   // 시스템 UI 오버레이 스타일을 설정하여 상단 상태 표시줄의 색상을 지정합니다.
   // 이 코드는 iOS와 Android 모두에서 일관된 상태 표시줄 스타일을 보장합니다.
   SystemChrome.setSystemUIOverlayStyle(
