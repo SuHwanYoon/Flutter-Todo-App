@@ -3,17 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_todo_app/firebase_options.dart';
-import 'package:flutter_todo_app/features/task_management/presentation/screens/main_screen.dart';
 import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/theme_provider.dart';
 import 'package:flutter_todo_app/utils/notification_helper.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
-
-// 글로벌 로컬 알림 인스턴스
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 
 // 앱이 처음 시작될 때 실행되는 메인 함수입니다.
 // 'async'는 이 함수 안에서 비동기(await) 작업을 할 것이라는 의미입니다.
@@ -29,14 +21,8 @@ void main() async {
   // Firebase 설정을 자동으로 가져옵니다.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 타임존 초기화 (예약 알림용)
-  tz.initializeTimeZones();
-  // UTC 기준으로 설정하고, DateTime.now()를 사용하면 자동으로 로컬 시간 변환됨
-  tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
-  print('🌍 [Timezone] Asia/Seoul로 설정');
-
-  // 로컬 알림 초기화
-  await _initializeNotifications();
+  // Awesome Notifications 초기화
+  await NotificationHelper.initialize();
 
   // 배터리 최적화 제외 요청 (앱 시작 시 한 번)
   await NotificationHelper.requestIgnoreBatteryOptimization().catchError((e) {
@@ -106,50 +92,3 @@ class MyApp extends ConsumerWidget {
   }
 }
 
-// 로컬 알림 초기화 함수
-Future<void> _initializeNotifications() async {
-  // Android 설정
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  // iOS 설정 (권한 요청은 토글 ON 시에만)
-  const DarwinInitializationSettings initializationSettingsIOS =
-      DarwinInitializationSettings(
-    requestAlertPermission: false,
-    requestBadgePermission: false,
-    requestSoundPermission: false,
-  );
-
-  // 통합 설정
-  const InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
-  );
-
-  // 초기화
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (NotificationResponse response) {
-      // 알림 탭 시 AllTasksScreen(탭 0)으로 이동
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        mainScreenKey.currentState?.changeTab(0);
-      });
-    },
-  );
-
-  // Android 알림 채널 생성 (Android 8.0+)
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // 이름
-    description: '중요한 알림을 위한 채널',
-    importance: Importance.max,
-    sound: RawResourceAndroidNotificationSound('notification'),
-    enableLights: true,
-    enableVibration: true,
-  );
-
-  await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-}
