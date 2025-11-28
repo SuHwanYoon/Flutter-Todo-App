@@ -445,12 +445,13 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                       payload: taskId,       // 알림 탭 시 taskId 전달
                     );
 
-                    // 🧪 테스트: 즉시 알림 (알림 시스템 작동 확인용)
-                    // await NotificationHelper.showNotification(
-                    //   id: 9999,
-                    //   title: '✅ 알림 테스트',
-                    //   body: '할일 "$title"의 알림이 ${notificationTime.toString()}에 예약되었습니다!',
-                    // );
+                    //  즉시 알림 (알림 시스템 작동 확인용)
+                    final formattedTime = '${notificationTime.year}-${notificationTime.month.toString().padLeft(2, '0')}-${notificationTime.day.toString().padLeft(2, '0')} ${notificationTime.hour.toString().padLeft(2, '0')}:${notificationTime.minute.toString().padLeft(2, '0')}';
+                    await NotificationHelper.showNotification(
+                      id: 9999,
+                      title: '✅ 알림예약',
+                      body: '"$title"의 알림이 $formattedTime에 예약되었습니다!',
+                    );
 
                     // 🧪 추가 테스트: 10초 후 알림 (에뮬레이터 테스트용)
                     // await NotificationHelper.scheduleNotification(
