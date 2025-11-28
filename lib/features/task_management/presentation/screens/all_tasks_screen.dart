@@ -8,7 +8,6 @@ import 'package:flutter_todo_app/features/task_management/data/notification_repo
 import 'package:flutter_todo_app/features/task_management/domain/task.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/task_sort_controller.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/controller/firestore_controller.dart';
-import 'package:flutter_todo_app/features/task_management/presentation/controller/task_sort_controller.dart';
 import 'package:flutter_todo_app/features/task_management/presentation/widgets/task_item.dart';
 
 class AllTasksScreen extends ConsumerWidget {
