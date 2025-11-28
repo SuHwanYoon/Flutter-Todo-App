@@ -6,6 +6,11 @@
 .DS_Store
 CLAUDE.md
 GEMINI.md
+ANDROID_NOTIFICATION_FIX.md
+SOLUTION_SUMMARY.md
+TEST_GUIDE.md
+.claude/
+android/build
 .atom/
 .build/
 .buildlog/
