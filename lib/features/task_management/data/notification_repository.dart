@@ -110,6 +110,32 @@ class NotificationRepository {
     final querySnapshot = await _notificationsRef(userId).get();
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
+
+  // Batch delete notifications for multiple tasks
+  Future<void> batchDeleteNotificationsForTasks({
+    required String userId,
+    required List<String> taskIds,
+  }) async {
+    if (taskIds.isEmpty) return;
+
+    // Firestore's 'whereIn' query supports up to 30 elements.
+    const chunkSize = 30;
+    for (var i = 0; i < taskIds.length; i += chunkSize) {
+      final chunk = taskIds.sublist(
+          i, i + chunkSize > taskIds.length ? taskIds.length : i + chunkSize);
+
+      final querySnapshot =
+          await _notificationsRef(userId).where('taskId', whereIn: chunk).get();
+
+      if (querySnapshot.docs.isEmpty) continue;
+
+      final batch = _firestore.batch();
+      for (final doc in querySnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+    }
+  }
 }
 
 @Riverpod(keepAlive: true)

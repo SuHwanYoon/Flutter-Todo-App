@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 part 'auth_repository.g.dart';
 
@@ -77,6 +79,58 @@ class AuthRepository {
       throw Exception('User not found');
     }
     await user.delete();
+  }
+
+  /// Google 계정으로 로그인합니다.
+  /// Google Sign-In 플로우를 시작하고, 사용자가 인증을 완료하면
+  /// Firebase Authentication에 Google 자격 증명으로 로그인합니다.
+  /// 사용자가 로그인을 취소하면 null을 반환합니다.
+  Future<UserCredential?> signInWithGoogle() async {
+    // Google Sign-In 인스턴스 생성
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    // Google 로그인 플로우 시작
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+    // 사용자가 로그인을 취소한 경우
+    if (googleUser == null) {
+      return null;
+    }
+
+    // Google 인증 정보 가져오기
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    // Firebase 인증 자격 증명 생성
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Firebase에 로그인
+    return await _auth.signInWithCredential(credential);
+  }
+
+  /// Apple 계정으로 로그인합니다.
+  /// Sign in with Apple 플로우를 시작하고, 사용자가 인증을 완료하면
+  /// Firebase Authentication에 Apple 자격 증명으로 로그인합니다.
+  Future<UserCredential> signInWithApple() async {
+    // Apple Sign-In 플로우 시작
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    // Firebase 인증 자격 증명 생성
+    final oauthCredential = OAuthProvider("apple.com").credential(
+      idToken: appleCredential.identityToken,
+      accessToken: appleCredential.authorizationCode,
+    );
+
+    // Firebase에 로그인
+    return await _auth.signInWithCredential(oauthCredential);
   }
 }
 

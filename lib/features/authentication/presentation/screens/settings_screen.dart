@@ -60,14 +60,14 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('Contact Us'),
             subtitle: const Text('Get help or send feedback'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _launchUrl('https://forms.gle/MCcaaTJ2bKhyNp6a7'), // TODO: URL 변경
+            onTap: () => _launchUrl('https://forms.gle/MCcaaTJ2bKhyNp6a7'), 
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
             title: const Text('Privacy Policy'),
             subtitle: const Text('Read our privacy policy'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => _launchUrl('https://doc-hosting.flycricket.io/oneulyi-halil-privacy-policy/f8f480a5-fa2d-4c65-b550-32bcb6f3b5b3/privacy'), // TODO: URL 변경
+            onTap: () => _launchUrl('https://doc-hosting.flycricket.io/oneulyi-halil-privacy-policy/f8f480a5-fa2d-4c65-b550-32bcb6f3b5b3/privacy'), 
           ),
 
           const SizedBox(height: 16),
@@ -77,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
           const ListTile(
             leading: Icon(Icons.email_outlined),
             title: Text('Developer Email'),
-            subtitle: Text('suhwan6@gmail.com'), // TODO: 이메일 변경
+            subtitle: Text('suhwan6@gmail.com'), 
           ),
         ],
       ),

@@ -8,6 +8,7 @@ import 'package:flutter_todo_app/routes/routes.dart';
 import 'package:flutter_todo_app/utils/app_styles.dart';
 import 'package:flutter_todo_app/utils/size_config.dart';
 import 'package:go_router/go_router.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // SignInScreen은 위젯 클래스 입니다.
 // SignInScreen은 ConsumerStatefulWidget입니다.
@@ -196,6 +197,142 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             ),
                           ),
                   ),
+                ),
+                SizedBox(height: SizeConfig.getProportionateHeight(10)),
+
+                // "OR" 텍스트와 좌우 구분선을 표시하는 UI입니다.
+                // Row를 사용하여 자식 위젯들을 가로로 배치합니다.
+                Row(
+                  // 자식 위젯들을 주 축(가로)의 중앙에 정렬합니다.
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // 왼쪽 구분선입니다. 화면 너비의 40%를 차지합니다.
+                    Container(
+                      height: SizeConfig.getProportionateHeight(1),
+                      width: SizeConfig.screenWidth * 0.40,
+                      decoration: const BoxDecoration(color: Colors.grey),
+                    ),
+                    // "OR" 텍스트와 구분선 사이의 간격을 줍니다.
+                    SizedBox(width: SizeConfig.getProportionateWidth(10)),
+                    // "OR" 텍스트를 표시합니다.
+                    Text('OR', style: Appstyles.normalTextStyle),
+                    // "OR" 텍스트와 구분선 사이의 간격을 줍니다.
+                    SizedBox(width: SizeConfig.getProportionateWidth(10)),
+                    // 오른쪽 구분선입니다. 화면 너비의 40%를 차지합니다.
+                    Container(
+                      height: SizeConfig.getProportionateHeight(1),
+                      width: SizeConfig.screenWidth * 0.40,
+                      decoration: const BoxDecoration(color: Colors.grey),
+                    ),
+                  ],
+                ),
+                SizedBox(height: SizeConfig.getProportionateHeight(20)),
+                // 소셜 로그인 아이콘들을 가로로 나열
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // TODO: Naver 로그인 구현 예정 (v1.2.0)
+                    // // Naver 로그인 아이콘
+                    // InkWell(
+                    //   onTap: () {
+                    //     // TODO: Naver 로그인 로직 구현
+                    //   },
+                    //   borderRadius: BorderRadius.circular(12),
+                    //   child: Container(
+                    //     width: 56,
+                    //     height: 56,
+                    //     decoration: BoxDecoration(
+                    //       color: const Color(0xFF03C75A),
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     child: const Center(
+                    //       child: Text(
+                    //         'N',
+                    //         style: TextStyle(
+                    //           color: Colors.white,
+                    //           fontSize: 28,
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(width: SizeConfig.getProportionateWidth(16)),
+                    // TODO: Kakao 로그인 구현 예정 (v1.2.0)
+                    // // Kakao 로그인 아이콘
+                    // InkWell(
+                    //   onTap: () {
+                    //     // TODO: Kakao 로그인 로직 구현
+                    //   },
+                    //   borderRadius: BorderRadius.circular(12),
+                    //   child: Container(
+                    //     width: 56,
+                    //     height: 56,
+                    //     decoration: BoxDecoration(
+                    //       color: const Color(0xFFFEE500),
+                    //       borderRadius: BorderRadius.circular(12),
+                    //     ),
+                    //     child: const Center(
+                    //       child: Icon(
+                    //         Icons.chat_bubble,
+                    //         color: Colors.black87,
+                    //         size: 28,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(width: SizeConfig.getProportionateWidth(16)),
+                    // Google 로그인 아이콘
+                    InkWell(
+                      onTap: () {
+                        ref
+                            .read(authControllerProvider.notifier)
+                            .signInWithGoogle();
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: const Center(
+                          child: FaIcon(
+                            FontAwesomeIcons.google,
+                            size: 28,
+                            color: Color(0xFF4285F4), // Google 파란색
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.getProportionateWidth(16)),
+                    // Apple 로그인 아이콘
+                    InkWell(
+                      onTap: () {
+                        ref
+                            .read(authControllerProvider.notifier)
+                            .signInWithApple();
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.apple,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: SizeConfig.getProportionateHeight(40)),
                 // 계정이 없는 사용자를 위한 회원가입 화면 이동 UI입니다.
