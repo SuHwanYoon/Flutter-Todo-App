@@ -297,9 +297,6 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                           return;
                         }
 
-                        // 1.5 배터리 최적화 화이트리스트 요청 (앱이 백그라운드에서 실행되도록)
-                        await NotificationHelper.requestIgnoreBatteryOptimization();
-
                         // 2. 정확한 알람 권한 확인 (Android 전용)
                         final bool exactAlarmGranted =
                             await NotificationHelper.canScheduleExactAlarms();

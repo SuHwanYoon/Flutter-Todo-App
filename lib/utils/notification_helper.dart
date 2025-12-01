@@ -2,12 +2,9 @@ import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 /// Awesome Notifications 기반 알림 헬퍼 클래스
 class NotificationHelper {
-  static const platform = MethodChannel('com.yoon.flutter_todo_app/battery');
-
   /// Awesome Notifications 초기화
   static Future<void> initialize() async {
     await AwesomeNotifications().initialize(
@@ -29,22 +26,6 @@ class NotificationHelper {
     );
 
     print('✅ [Notification] Awesome Notifications 초기화 완료');
-  }
-
-  /// Android에서 배터리 최적화 제외 요청
-  static Future<bool> requestIgnoreBatteryOptimization() async {
-    if (Platform.isAndroid) {
-      try {
-        final result = await platform.invokeMethod<bool>(
-          'requestIgnoreBatteryOptimization',
-        );
-        return result ?? false;
-      } catch (e) {
-        print('⚠️ [Notification] 배터리 최적화 제외 요청 실패: $e');
-        return false;
-      }
-    }
-    return true;
   }
 
   /// 알림 권한 요청
