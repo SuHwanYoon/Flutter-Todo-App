@@ -32,7 +32,7 @@ android {
     if (keyPropertiesFile.exists()) {
         keyProperties.load(FileInputStream(keyPropertiesFile))
     }
-
+    // Configure signing configurations
     signingConfigs {
         create("release") {
             keyAlias = keyProperties["keyAlias"] as String?
@@ -48,11 +48,12 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    // Configure build types
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
