@@ -208,8 +208,9 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                 focusNode: _descriptionFocusNode,
               ),
               SizedBox(height: SizeConfig.getProportionateHeight(20.0)),
-              // 우선순위를 선택하는 Row 위젯입니다.
-              Row(
+              // 우선순위를 선택하는 위젯입니다. Wrap 위젯을 사용하여 화면 크기 및 폰트 크기에 따라 유연하게 반응합니다.
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Priority',
@@ -218,53 +219,45 @@ class _AddTaskScreenState extends ConsumerState<AddTaskScreen> {
                       color: colorScheme.onSurface,
                     ),
                   ),
-                  Expanded(
-                    child: SizedBox(
-                      height: SizeConfig.getProportionateHeight(40),
-                      // 우선순위 버튼들을 가로로 나열하기 위해 ListView.builder를 사용합니다.
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _priorities.length,
-                        itemBuilder: (context, index) {
-                          final priority = _priorities[index];
-                          // GestureDetector는 탭 이벤트를 감지하는 위젯입니다.
-                          // 사용자가 우선순위 버튼을 탭하면 _selectedPriorityIndex를 업데이트하고
-                          // 화면을 다시 그려 선택된 우선순위가 시각적으로 표시되도록 합니다.
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedPriorityIndex = index;
-                              });
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                left: SizeConfig.getProportionateWidth(8.0),
-                              ),
-                              padding: EdgeInsets.all(
-                                SizeConfig.getProportionateHeight(8.0),
-                              ),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
+                  SizedBox(height: SizeConfig.getProportionateHeight(8)),
+                  Wrap(
+                    spacing: SizeConfig.getProportionateWidth(8.0), // 버튼들 사이의 가로 간격
+                    runSpacing: SizeConfig.getProportionateHeight(8.0), // 줄바꿈 시 세로 간격
+                    children: List<Widget>.generate(
+                      _priorities.length,
+                      (index) {
+                        final priority = _priorities[index];
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedPriorityIndex = index;
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: SizeConfig.getProportionateHeight(10.0),
+                              horizontal: SizeConfig.getProportionateWidth(20.0),
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              // 선택된 우선순위에 따라 버튼 색상을 변경합니다.
+                              color: _selectedPriorityIndex == index
+                                  ? PriorityColors.getColor(priority)
+                                  : Colors.grey,
+                            ),
+                            child: Text(
+                              priority,
+                              style: Appstyles.normalTextStyle.copyWith(
+                                // 선택된 우선순위에 따라 텍스트 색상을 변경합니다.
                                 color: _selectedPriorityIndex == index
-                                    ? PriorityColors.getColor(priority)
-                                    : Colors.grey,
-                              ),
-                              child: Text(
-                                priority,
-                                style: Appstyles.normalTextStyle.copyWith(
-                                  // 선택된 우선순위에 따라 텍스트 색상을 변경합니다.
-                                  color: _selectedPriorityIndex == index
-                                      ? Colors.white
-                                      : colorScheme.onSurface,
-                                  fontSize: 20,
-                                ),
+                                    ? Colors.white
+                                    : colorScheme.onSurface,
+                                fontSize: 16, // 기본 폰트 크기를 약간 줄여 반응성에 더 유리하게 합니다.
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],

@@ -121,6 +121,12 @@ class AuthRepository {
         AppleIDAuthorizationScopes.email,
         AppleIDAuthorizationScopes.fullName,
       ],
+      webAuthenticationOptions: WebAuthenticationOptions(
+        clientId: 'com.yoon.flutterTodoApp.web', // 1-1에서 생성한 Service ID
+        redirectUri: Uri.parse(
+          'https://flutter-firebase-fd0f7.firebaseapp.com/__/auth/handler',
+        ),
+      ),
     );
 
     // Firebase 인증 자격 증명 생성
