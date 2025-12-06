@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 part 'auth_repository.g.dart';
 
@@ -115,22 +114,14 @@ class AuthRepository {
   /// Sign in with Apple 플로우를 시작하고, 사용자가 인증을 완료하면
   /// Firebase Authentication에 Apple 자격 증명으로 로그인합니다.
   Future<UserCredential> signInWithApple() async {
-    // Apple Sign-In 플로우 시작
-    final appleCredential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-    );
+    // `firebase_auth`에서 직접 AppleAuthProvider 인스턴스를 생성합니다.
+    final appleProvider = AppleAuthProvider();
+    // 사용자로부터 이메일과 이름을 요청하기 위해 스코프를 추가합니다.
+    appleProvider.addScope('email');
+    appleProvider.addScope('name');
 
-    // Firebase 인증 자격 증명 생성
-    final oauthCredential = OAuthProvider("apple.com").credential(
-      idToken: appleCredential.identityToken,
-      accessToken: appleCredential.authorizationCode,
-    );
-
-    // Firebase에 로그인
-    return await _auth.signInWithCredential(oauthCredential);
+    // `signInWithProvider`를 호출하여 Firebase가 모든 웹 인증 과정을 처리하도록 합니다.
+    return await _auth.signInWithProvider(appleProvider);
   }
 }
 

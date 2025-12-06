@@ -321,8 +321,8 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                 Row(
                   children: [
                     // priority 표시 박스
-                    SizedBox(
-                      width: SizeConfig.getProportionateWidth(90),
+                    Flexible( // Flexible로 감싸서 공간을 유연하게 할당
+                      flex: 1,
                       child: Container(
                         alignment: Alignment.center,
                         height: SizeConfig.getProportionateHeight(40),
@@ -342,14 +342,15 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                         ),
                       ),
                     ),
-                    SizedBox(width: SizeConfig.getProportionateWidth(10)),
+                    SizedBox(width: 8.0),
                     // 알림 시간 표시 (알림이 있는 경우에만)
                     notificationAsync.when(
                       data: (notification) {
                         if (notification == null) {
                           return const SizedBox.shrink();
                         }
-                        return Expanded(
+                        return Flexible(
+                          flex: 2,
                           child: InkWell(
                             onTap: () {
                               _showNotificationOptionsDialog(notification);
@@ -365,6 +366,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Icon(
                                     Icons.notifications_active,
@@ -372,7 +374,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                                     color: Colors.white,
                                   ),
                                   SizedBox(
-                                    width: SizeConfig.getProportionateWidth(5),
+                                    width: 4.0,
                                   ),
                                   Flexible(
                                     child: Text(
@@ -400,16 +402,19 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                 Row(
                   children: [
                     Icon(
-                      Icons.calendar_today,
+                      Icons.history,
                       size: 14,
                       color: colorScheme.onSurfaceVariant,
                     ),
                     SizedBox(width: SizeConfig.getProportionateWidth(5)),
-                    Text(
-                      'Created: ${formatDate(widget.task.date)}',
-                      style: Appstyles.normalTextStyle.copyWith(
-                        fontSize: 12,
-                        color: colorScheme.onSurfaceVariant,
+                    Flexible(
+                      child: Text(
+                        formatDate(widget.task.date),
+                        style: Appstyles.normalTextStyle.copyWith(
+                          fontSize: 12,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],

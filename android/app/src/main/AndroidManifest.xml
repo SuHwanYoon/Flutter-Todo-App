@@ -14,18 +14,8 @@
     <!-- 5. 정확한 알람 권한 (예약 알림용, Android 12+ 필수) -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
-    <!-- 6. 정확한 알람 사용 권한 (Android 13+ 필수) -->
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-
     <!-- 7. 기기 절전 모드 해제 권한 (알람 실행 보장) -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- 8. 배터리 최적화 제외 권한 (Android 12+) -->
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-
-    <!-- 9. WorkManager 용 권한 -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 
     <application
