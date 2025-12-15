@@ -311,7 +311,7 @@ class _TaskItemState extends ConsumerState<TaskItem> {
                   widget.task.description,
                   style: Appstyles.normalTextStyle.copyWith(
                     fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
+                    color: colorScheme.onSurface,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
