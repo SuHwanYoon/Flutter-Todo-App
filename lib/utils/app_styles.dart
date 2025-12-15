@@ -33,8 +33,8 @@ class Appstyles {
   // 일반 텍스트(normal)에 사용될 텍스트 스타일입니다.
   static final normalTextStyle = GoogleFonts.mcLaren(
     fontSize: SizeConfig.getProportionateHeight(12),
-    // 글자 두께를 100 (w100)으로 설정하여 매우 얇게 표시합니다.
-    fontWeight: FontWeight.w100,
+    // 글자 두께를 400 (w400, normal)으로 설정하여 한글도 명확하게 표시합니다.
+    fontWeight: FontWeight.w400,
     color: Colors.black,
   );
 
